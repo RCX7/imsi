@@ -1,0 +1,170 @@
+% massLegActuatorSim
+% Roger Chen
+% 2026-06-15
+% Adapted from massLegSim code
+% Adds a variable actuator length to the model.
+
+clc
+clearvars -except w_star optimal_step step_time toe_pos
+close all
+
+%% Define variables
+simulation = false;
+save_video = false;
+video_name = "simulation_videos/optimal_step.mp4";
+
+[g, la0, m, k, c, z0, zdot0, x0, xdot0,...
+    tfinal, N, n_state_vars, dt, xdot_target] = constants();
+
+% overwritting with solver-chosen values
+zdot0 = w_star(4*N+1);
+xdot0 = w_star(10*N+1);
+z0 = w_star(N+1);
+step_period = sum(w_star(end-2:end));
+
+La_dot = [0 0 3];                     % Active length (Controlled by actuator) (same as u or w)
+La_dot = [optimal_step.', step_time, toe_pos];
+%La_dot = [optimal_step.', optimal_step(3:end).',0,0, optimal_step.', step_time * 3];
+% La_dot = [optimal_step.', optimal_step(3:end).',0,0, optimal_step.', optimal_step.', optimal_step(3:end).',0,0, optimal_step.', 3];
+
+%% Define dynamics equations
+ground_dynamics = @(t, y) groundDynamics(t, y, La_dot, x0, step_period);        % needs to be regenerated for every x0
+air_dynamics = @(t, y)  airDynamics(t, y, La_dot);
+leaveGroundEventHandler = @(t, y) leaveGroundEvent(t, y, La_dot, x0);
+contactGroundEventHandler = @(t, y) contactGroundEvent(t, y, La_dot(end));
+
+%% Run simulation with ODE45 %%
+
+% determine initial state:
+if la0 >= z0
+    % STATE IS GROUND
+    % ground_dynamics = @(t, y) groundDynamics(t, y, La_dot, x0); not
+    % necessary to regenerate here
+    options = odeset('Events', leaveGroundEventHandler);
+    [t_v, s_v, t_e, h_e, ie] = ode45(ground_dynamics,...
+        [0 tfinal], [z0; zdot0; x0; xdot0; la0], options);
+    state = "air";      % done with ground time
+else
+    % STATE IS AIR
+    options = odeset('Events', contactGroundEventHandler);
+    [t_v, s_v, t_e, h_e, ie] = ode45(air_dynamics,...
+        [0 tfinal], [z0; zdot0; x0; xdot0; la0], options);
+    state = "ground";    % done with air time
+end
+%disp(state);
+
+t_vec = t_v;
+s_vec = s_v;
+
+% begin plotting
+subplot(2, 1, 1);
+
+if state == "air"
+    plot(s_v(:,3), s_v(:,1), 'r-');
+elseif state == "ground"
+    plot(s_v(:,3), s_v(:,1), 'b-');
+end
+hold on;
+
+% Various event stages
+contact_points = [];
+while t_vec(end) <= tfinal
+    
+    if isempty(h_e)
+        break;
+    end
+    
+    if state == "air"
+        options = odeset('Events', contactGroundEventHandler);
+        [t_v, s_v, t_e, h_e, ie] = ode45(air_dynamics,...
+            [t_e tfinal], [h_e(1); h_e(2); h_e(3); h_e(4); la0], options);
+        state = "ground";
+    else
+        ground_dynamics = @(t, y) groundDynamics(t, y, La_dot, h_e(3), step_period);
+        leaveGroundEventHandler = @(t, y) leaveGroundEvent(t, y, La_dot, h_e(3));
+        contact_points = [contact_points, h_e(3)];
+        options = odeset('Events', leaveGroundEventHandler);
+        [t_v, s_v, t_e, h_e, ie] = ode45(ground_dynamics,...
+            [t_e tfinal], [h_e(1); h_e(2); h_e(3); h_e(4); la0], options);
+        state = "air";
+    end
+
+    if state == "air"
+        plot(s_v(:,3), s_v(:,1), 'r-');
+        %plot(t_v, h_v(:,3), 'g-', 'LineWidth', 5);
+    elseif state == "ground"
+        plot(s_v(:,3), s_v(:,1), 'b-');
+    end
+
+    t_vec = [t_vec; t_v(2:end, :)];
+    s_vec = [s_vec; s_v(2:end, :)];
+end
+
+% PLOT HEIGHT AND RESTING STATE
+step_period = sum(w_star(end-2:end));
+xline(x0 + xdot_target * step_period, "LineWidth",2,"Color","green");
+plot(s_vec(:, 3), s_vec(:, 5) - ((m * g) / k), 'r--');  % plot equilibrium condition
+plot(s_vec(:, 3), s_vec(:, 5), 'b--');
+scatter(contact_points, zeros(1, numel(contact_points)), ...
+    100,"r", "Marker", "x", "LineWidth",3);
+yline(0, "LineWidth", 3);
+ylim([-0.1, z0 + 0.1]);
+xlim( [min(s_vec(:,3)), max(s_vec(:,3))] );
+ylabel("z position (m)");
+xlabel("x position (sec)");
+ylim padded;
+
+% subplot(3, 1, 2);
+% plot(s_vec(:,4), s_vec(:,2), 'b--');
+% axis equal;
+% ylabel("z velocity (m/sec)");
+% xlabel("x velocity (m/sec)");
+
+subplot(2, 1, 2);
+plot(t_vec, interp1(linspace(0, 0.5, numel(La_dot)-1), La_dot(1:end-1), t_vec), 'k--');
+xlim( [min(s_vec(:,3)), max(s_vec(:,3))] );
+ylabel("control (m/sec)");
+xlabel("time (sec)");
+
+%% TO GENERATE SIMULATION %%
+
+if simulation
+    pause(1);
+    close all;
+
+    FPS = 60;                                       % defining framerate
+    t_anim = 0:1/FPS:t_vec(end);                    % defining framerate
+    h_anim = interp1(t_vec, z_vec(:, 1), t_anim);   % finding points at these frames
+    la_anim = interp1(t_vec, z_vec(:, 3), t_anim);
+    
+    if save_video
+        v = VideoWriter(video_name, "MPEG-4");
+        v.FrameRate = FPS;
+        open(v);
+    end
+
+    figure
+    for iter = 1:numel(t_anim)
+        plot([0 0], [max(0, (h_anim(iter) - la_anim(iter))) h_anim(iter)], ...
+            'k--', 'LineWidth', k * 0.02);
+        hold on;
+        axis equal;
+        axis([-1 1 -0.25 2]);
+        
+        yline(0, 'k-');
+        plot(0, h_anim(iter), 'o', 'MarkerSize', 10, 'MarkerFaceColor', 'blue');
+        drawnow;
+        
+        if save_video
+            frame = getframe(gcf);
+            writeVideo(v, frame);
+        end
+        hold off;
+    end
+
+    if save_video
+        close(v);
+    end
+    close all;
+end
+

@@ -1,0 +1,22 @@
+% optimizeAct.m
+% Roger Chen
+% 2026-06-17
+% use fmincon to find the minimum of certain values
+
+clear; clc; close all;
+
+[g, Lp, m, k, c, h0, hdot0, tfinal] = constants();
+
+cost = @(w) w(end);                         % minimizing time but could minimize a number of things
+
+N = 20;
+w0 = [zeros(1, N) tfinal];                  % initial guess is all zeros
+
+A = [];
+b = [];
+Aeq = [];
+beq = [];
+
+w_min = -5;                                 % maximum actuator velocity
+w_max = 5;                                  % minimum actuator velocity
+w_star = fmincon(cost, w0, A, b, Aeq, beq, w_min, w_max);

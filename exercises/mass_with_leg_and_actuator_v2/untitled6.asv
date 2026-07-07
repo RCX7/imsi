@@ -1,0 +1,22 @@
+% optimizeAct.m
+% Roger Chen
+% 2026-06-17
+% use fmincon to find the minimum of certain values
+
+clear; clc; close all;
+
+[g, Lp, m, k, c, h0, hdot0, tfinal] = constants();
+
+cost = ;
+
+N = 20;
+w0 = [zeros(N, 1) tfinal];                  % initial guess is all zeros
+
+A = ;
+b = ;
+Aeq = ;
+beq = ;
+nonlcon = ;
+w_max 
+
+w_star = fmincon(cost, w0, A, b, Aeq, beq, 0, w_max, );

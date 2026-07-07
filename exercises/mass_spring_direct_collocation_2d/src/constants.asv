@@ -1,0 +1,21 @@
+% constants.m
+% a way to access constants globally.
+
+function [g, Lp, m, k, c, z0, zdot0, x0, xdot0,...
+          tfinal, N, n_state_vars, dt, xdot_target] = constants()
+    g = 9.81;                   % Gravity (m/s^2)
+    Lp = 0.8;                   % Leg length (meters) - may not be necessary
+    m = 0.2;                    % Mass (kg)
+    k = 100;                    % Spring constant (N/m)
+    c = 0.8;                    % Dampening constant (Ns/m)
+    z0 = 1.0;                     % Starting height (m)
+    zdot0 = 0;                  % Starting vertical velocity (m/s)
+    x0 = 0;                     % Starting horizontal position (m; keep at 0 for now)
+    xdot0 = 2;                  % Starting horizontal velocity (m/s)
+    N = 10;                     % Number of knot points (coll. points = N - 1)
+    n_state_vars = 15;          % Number of state variables
+    tfinal = 3;               % Time (seconds)
+    dt = (tfinal) / (N - 1);    % time between each
+    xdot_target = 2;
+end
+

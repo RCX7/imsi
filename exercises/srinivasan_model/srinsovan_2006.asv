@@ -1,0 +1,45 @@
+rng(42);
+% constants / constraints
+g = 9.81;
+lmax = 1;   % leg length (m)
+m = 70;     % kg
+N = 10;     % segments of force curve (endt/N = period of linear force)
+
+dt = 0.01;  % computation segments
+endt = 10;  % end time (s)
+
+V = 0.5;    % non dimensional velocity constraint (m/s)
+D = 0.8;    % non dimensional step length constraint (m)
+
+% starting conditions (arbitrary guesses)
+xc = 0;
+x0 = 0;
+y0 = (rand() * 0.5) + 0.5;
+xdot0 = (rand() * 0.5) + 0.5;
+ydot0 = 0;
+
+% state variables
+x = x0;
+y = y0;
+xdot = 0;   % x velocity
+ydot = 0;   % y velocity
+ts = 0.6;   % step period
+
+% non dimensionalize
+rootglmax = sqrt(g * lmax);
+X0 = x0 / lmax;
+Xdot0 = xdot0 / rootglmax;
+Y0 = y0 / lmax;
+Ydot0 = ydot0 / rootglmax;
+Ts = ts / rootglmax;
+
+
+% set up state vector
+z0 = [x0; Xdot0_guess; Y0; Ydot0; F_guess; tau_s_guess];
+
+disp("--- starting conditions: ---");
+fprintf("mass position (x, y): (%f, %f)\n", x, y);
+fprintf("mass velcoity (x, y): (%f, %f)\n", xdot, ydot);
+
+
+[T_stance, S_stance] = ode45(@stance_update, [0, tau_s], S0, options);

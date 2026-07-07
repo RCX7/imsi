@@ -1,0 +1,62 @@
+% minCOT.m
+% Roger Chen
+% 2026-07-07
+% A callable module based off of a single trajectory optimization.
+% Minimizes the COT for certain input parameters.
+% for wide parameter sweeps.
+% INPUTS:
+%   - mode ('r' for running, 'h' for hopping)
+%   - parameters of interest:
+%       - speed
+%       - leg inertia
+%       - spring constant
+%       - damping constant
+% OUTPUTS:
+%   - cost of transport (with leg inertia)
+
+function COT = minCOT(mode, xdot_target, I, k, c)
+    addpath('../../warmStartTemplates');
+    addpath('../sharedFuncs');
+    sharedFuncsCleanUp = onCleanup(@() rmpath('../sharedFuncs'));
+    wstCleanUp = onCleanup(@() rmpath('../../warmStartTemplates'));
+
+    A = []; b = []; Aeq = []; beq = [];
+    
+    % get constants
+    [N, n_states] = simConstants();
+ 
+    if mode ==
+    
+    % cost function and constraints
+    cost = @(w) costFun(w, mode, I);     % for energy minimzation
+    constraints = @(w) trajConstraints(w, xdot_target, k, c);
+    
+    % define bounds
+    lb_u = -inf(1, N);
+    lb_states = -inf(n_states, N);      % x, xdot, zdot can be arbitrarily low
+    lb_states(3,:) = 0;                 % z - cannot fall through floor
+    % lb_states(5,:) = la_min;            % la - some range of motion
+    lb_addDecs = [1e-3, 1e-3, zeros(1, N)];       % time and magnitude of power
+    lb = matToDec(lb_u, lb_states, lb_addDecs);
+    
+    ub_u = inf(1, N);
+    ub_states = inf(n_states, N);
+    % ub_states(5,:) = la_max;
+    ub_addDecs = [inf, inf, inf(1, N)];
+    ub = matToDec(ub_u, ub_states, ub_addDecs);
+    
+    % decision vector (inital guess)
+    if ~exist('w_star', 'var')
+        disp("using warm start template");
+        if MODE == 'r', load runWarmStart;
+        else, load hopWarmStart; end
+    end
+    w0 = w_star;
+    
+    options = optimoptions("fmincon", "Display", "iter",...
+        "MaxFunctionEvaluations",40000, "MaxIterations",1000);
+    w_star = fmincon(cost, w0, A, b, Aeq, beq, lb, ub,...
+        constraints, options);
+    
+    COT = cost(w_star);
+end
