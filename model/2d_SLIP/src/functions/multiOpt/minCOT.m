@@ -14,9 +14,19 @@
 % OUTPUTS:
 %   - cost of transport (with leg inertia)
 
-function COT = minCOT(mode, xdot_target, k, c, I)
+function [COT, w_star] = minCOT(mode, xdot_target, k, c, I, init_guess)
+    arguments
+        mode char
+        xdot_target
+        k
+        c
+        I
+        init_guess = 0;
+    end
+    fprintf("Mode: %s | Speed: %.2f | k, c, I: %d %.2f %.5f\n", mode, xdot_target, k, c, I);
+
     assert (mode == 'h' | mode == 'r');
-    clearvars -except w_star mode xdot_target k c I;
+    clearvars -except w_star mode xdot_target k c I init_guess;
 
     A = []; b = []; Aeq = []; beq = [];
     
@@ -47,15 +57,17 @@ function COT = minCOT(mode, xdot_target, k, c, I)
     ub = matToDec(ub_u, ub_states, ub_addDecs);
     
     % decision vector (inital guess)
-    if ~exist('w_star', 'var')
+    if init_guess == 0
         disp("using warm start template");
         if mode == 'r', load runWarmStart;
         else, load hopWarmStart; end
+        w0 = w_star;
+    else
+        w0 = init_guess;
     end
-    w0 = w_star;
     
-    options = optimoptions("fmincon",...
-        "MaxFunctionEvaluations",40000, "MaxIterations",1000);
+    options = optimoptions("fmincon", "Display", "notify-detailed", ...
+        "MaxFunctionEvaluations",100000, "MaxIterations",1000);
     w_star = fmincon(cost, w0, A, b, Aeq, beq, lb, ub,...
         constraints, options);
     
