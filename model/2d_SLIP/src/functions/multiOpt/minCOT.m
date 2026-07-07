@@ -18,11 +18,6 @@ function COT = minCOT(mode, xdot_target, k, c, I)
     assert (mode == 'h' | mode == 'r');
     clearvars -except w_star mode xdot_target k c I;
 
-    addpath('../../warmStartTemplates');
-    addpath('../sharedFuncs');
-    sharedFuncsCleanUp = onCleanup(@() rmpath('../sharedFuncs'));
-    wstCleanUp = onCleanup(@() rmpath('../../warmStartTemplates'));
-
     A = []; b = []; Aeq = []; beq = [];
     
     % get constants
@@ -59,7 +54,7 @@ function COT = minCOT(mode, xdot_target, k, c, I)
     end
     w0 = w_star;
     
-    options = optimoptions("fmincon", "Display", "iter",...
+    options = optimoptions("fmincon",...
         "MaxFunctionEvaluations",40000, "MaxIterations",1000);
     w_star = fmincon(cost, w0, A, b, Aeq, beq, lb, ub,...
         constraints, options);
