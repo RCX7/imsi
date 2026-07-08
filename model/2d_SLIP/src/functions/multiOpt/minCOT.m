@@ -14,7 +14,9 @@
 % OUTPUTS:
 %   - cost of transport (with leg inertia)
 
-function [COT, w_star] = minCOT(mode, xdot_target, k, c, I, init_guess)
+function [COT, stance_cost, flight_cost, tstance, tflight, w_star] =...
+    minCOT(mode, xdot_target, k, c, I, init_guess)
+
     arguments
         mode char
         xdot_target

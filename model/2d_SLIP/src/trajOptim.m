@@ -19,7 +19,7 @@ end
 A = []; b = []; Aeq = []; beq = [];
 
 % get constants
-MODE = 'h'; % r for running, h for hopping
+MODE = 'r'; % r for running, h for hopping
 
 [m, g, k, c, la0, laRange, xdot_target, I] = physConstants(MODE);
 [N, n_states] = simConstants();
