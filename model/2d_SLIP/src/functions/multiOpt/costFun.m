@@ -16,8 +16,6 @@ function [cost] = costFun(w, mode, I)
     dist = xf - xs(1);
     % input 'r' for running, 'h' for hopping.
     swingCost = computeSwingWork(dist, addDecs(1), addDecs(2), mode, I);
-    
-    %disp(addDecs(1:2));
-    %disp(addDecs(3:end))
-    cost = trapz(addDecs(1), addDecs(3:2+N)) + swingCost;
+    stanceCost = trapz(addDecs(1), addDecs(3:2+N));
+    cost = stanceCost + swingCost;
 end

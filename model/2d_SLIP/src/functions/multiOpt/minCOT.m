@@ -14,7 +14,7 @@
 % OUTPUTS:
 %   - cost of transport (with leg inertia)
 
-function [COT, stance_cost, flight_cost, tstance, tflight, w_star] =...
+function [COT, stanceCost, flightCost, tstance, tflight, w_star] =...
     minCOT(mode, xdot_target, k, c, I, init_guess)
 
     arguments
@@ -73,5 +73,6 @@ function [COT, stance_cost, flight_cost, tstance, tflight, w_star] =...
     w_star = fmincon(cost, w0, A, b, Aeq, beq, lb, ub,...
         constraints, options);
     
-    COT = cost(w_star);
+    [COT, stanceCost, flightCost, tstance, tflight]...
+    = detailedCost(w_star, mode, I);
 end

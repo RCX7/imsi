@@ -16,8 +16,7 @@ function [cost, stanceCost, flightCost, tstance, tflight]...
     % swingCost = 0;
     dist = xf - xs(1);
     % input 'r' for running, 'h' for hopping.
-    flightCost = computeSwingWork(dist, addDecs(1), addDecs(2), mode, I);
-    
+    flightCost = computeSwingWork(dist, addDecs(1), addDecs(2), mode, I);   
     stanceCost = trapz(addDecs(1), addDecs(3:2+N));
     cost = stanceCost + flightCost;
     tstance = addDecs(1);
