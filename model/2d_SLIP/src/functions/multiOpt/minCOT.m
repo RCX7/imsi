@@ -61,8 +61,8 @@ function [COT, stanceCost, flightCost, tstance, tflight, w_star] =...
     % decision vector (inital guess)
     if init_guess == 0
         disp("using warm start template");
-        if mode == 'r', load runWarmStart;
-        else, load hopWarmStart; end
+        if mode == 'r', load('warmStartTemplates/runWarmStartv3.mat');
+        else, load('warmStartTemplates/hopWarmStartv3.mat'); end
         w0 = w_star;
     else
         w0 = init_guess;

@@ -39,7 +39,7 @@ function [c, ceq] = trajConstraints(w, mode)
     % cool trick for abs value
     guessed_power = addDecs(3:2+N);
     dist = xf - xs(1);
-    true_power = ((forces .* control) / (m*g*dist)) + 0;
+    true_power = ((forces .* control) / (m*g*dist));
     unsignedPowerConst = [-guessed_power + true_power;
                           -guessed_power - true_power;];
 

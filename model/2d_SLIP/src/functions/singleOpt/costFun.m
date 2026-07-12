@@ -13,11 +13,9 @@ function [cost] = costFun(w, mode)
         xs(end), xdots(end), zs(end), zdots(end), addDecs(2));
     
     % swingCost = 0;
-    dist = xf - xs(1);
+    dist = xs(end) - xs(1);
+    dtravel = xf - xs(1);
     % input 'r' for running, 'h' for hopping.
-    swingCost = computeSwingWork(dist, addDecs(1), addDecs(2), mode);
-    
-    %disp(addDecs(1:2));
-    %disp(addDecs(3:end))
+    swingCost = computeSwingWork(dist, addDecs(1), addDecs(2), mode, dtravel);
     cost = trapz(addDecs(1), addDecs(3:2+N)) + swingCost;
 end

@@ -4,8 +4,6 @@
 % To plot some trajectory
 
 function [] = plotTraj(w, color, mode)
-    addpath('../sharedFuncs');
-    sharedFuncCleanUp = onCleanup(@() rmpath('../sharedFuncs'));
 
     [m, g, k, c, la0, laRange, xdot_target, I] = physConstants(mode);
     [N, n_states] = simConstants();

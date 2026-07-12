@@ -26,5 +26,5 @@ function flag = isNotExpected(cot, prevCOTs)
     % end
 
     % SIMPLE CALCULATION - WORKS ALMOST AS WELL?
-    flag = (cot > 2.5 | cot <= 0);
+    flag = (cot > 8 | cot <= 0);
 end
