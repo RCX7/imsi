@@ -5,6 +5,6 @@
 % that determine how the simulation is run.
 
 function [N, n_states] = simConstants()
-    N = 25;
+    N = 35;
     n_states = 5;
 end

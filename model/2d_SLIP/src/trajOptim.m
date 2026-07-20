@@ -49,18 +49,20 @@ ub = matToDec(ub_u, ub_states, ub_addDecs);
 if warmStart
     if ~exist('w_star', 'var')
         disp("using warm start template");
-        if MODE == 'r', load('runWarmStart.mat');
-        else, load('hopWarmStart.mat'); end
+        if MODE == 'r', load('runN35.mat');
+        else, load('hopN35.mat'); end
     end
     w0 = w_star;
 else
     u = zeros(N, 1) + 1;
     states = zeros(n_states, N) + 0.1;
-    states(1,:) = linspace(-0.015, 0.025, N);
-    states(3,:) = 0.18;
+    % states(1,:) = linspace(-0.015, 0.025, N);
+    states(1,:) = 0;
+    states(2,:) = 0.1;
+    states(3,:) = [linspace(1, 0.5, N/2), linspace(0.5, 1, N/2 + 1)];
     states(4, :) = -1;
-    states(5,:) = 0.2;    
-    addDecs = [0.04; 0.01; zeros(N, 1) + 0.3];  % ts, tf, power (abs, N terms)
+    states(5,:) = 0.75;    
+    addDecs = [0.05; 0.01; zeros(N, 1) + 0.2];  % ts, tf, power (abs, N terms)
     w0 = matToDec(u, states, addDecs);
 end
 
@@ -69,9 +71,15 @@ options = optimoptions("fmincon", "Display", "iter",...
 w_star = fmincon(cost, w0, A, b, Aeq, beq, lb, ub,...
     @(w) trajConstraints(w, MODE), options);
 
-%plotTraj(w_star, "b", MODE);
+if MODE=='r', color='m'; else, color='b'; end
+plotTraj(w_star, color, MODE);
 disp("COST (" + MODE + "): ");
 disp(cost(w_star));
+[vAng, fAng, cAng] = getCollAngles(w_star);
+disp("Collision-based analysis angles (rad): ")
+fprintf("vel: %f\n", vAng);
+fprintf("force: %f\n", fAng);
+fprintf("coll: %f\n", cAng);
 
 rmpath('functions/singleOpt');
 rmpath('functions/sharedFuncs');

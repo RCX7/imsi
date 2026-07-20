@@ -32,7 +32,8 @@ function [] = plotTraj(w, color, mode)
     hold on;
     plot(linspace(0, addDecs(1), N), las, (color + "o-"));
     xlim padded;
-    ylim([la0-laRange, la0+laRange]);
+    ylim padded;
+    % ylim([la0-laRange, la0+laRange]);
 
     title("Actuated Length");
     xlabel("Time (sec)");
@@ -58,7 +59,8 @@ function [] = plotTraj(w, color, mode)
     hold on;
     plot(linspace(0, addDecs(1), N), control, (color + "o-"));
     xlim padded;
-    ylim([-5, 5]);
+    ylim padded;
+    % ylim([-5, 5]);
 
     title("Control (Actuated Velocity)");
     xlabel("Time (sec)");

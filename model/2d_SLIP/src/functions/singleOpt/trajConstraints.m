@@ -12,6 +12,7 @@ function [c, ceq] = trajConstraints(w, mode)
     assert(all(size(addDecs) == [1, 2+N]));
     [xs, xdots, zs, zdots, las] = extractStates(states);
     forces = computeForces(states, control, mode);
+    total_time = addDecs(1) + addDecs(2);
     
     % compute defect constraints for trajectory kinematics
     dt = addDecs(1) / (N - 1);
@@ -25,7 +26,7 @@ function [c, ceq] = trajConstraints(w, mode)
                          control(1)];
     
     [xf, xdotf, zf, zdotf] = flightKinematics(xs(end), xdots(end), zs(end), zdots(end), addDecs(2));
-    match_target_speed = ((xf - xs(1)) / (addDecs(1) + addDecs(2))) - xdot_target;
+    match_target_speed = ((xf - xs(1)) / (total_time)) - xdot_target;
     end_constraints = [(xdots(1) - xdotf);
                        (zs(1) - zf);
                        (zdots(1) - zdotf);
@@ -42,6 +43,9 @@ function [c, ceq] = trajConstraints(w, mode)
     true_power = ((forces .* control) / (m*g*dist));
     unsignedPowerConst = [-guessed_power + true_power;
                           -guessed_power - true_power;];
+    
+    target_frequency = 1.8;
+    frequency_constraints = [total_time - 1/target_frequency;];
 
     c = [unsignedPowerConst;
         %-forces'
@@ -49,6 +53,7 @@ function [c, ceq] = trajConstraints(w, mode)
 
     ceq = [defect_constraints;
            border_constraints;
+           frequency_constraints;
            %control'
            ];
 
