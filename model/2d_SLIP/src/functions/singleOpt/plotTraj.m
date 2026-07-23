@@ -36,8 +36,8 @@ function [] = plotTraj(w, color, mode)
     % ylim([la0-laRange, la0+laRange]);
 
     title("Actuated Length");
-    xlabel("Time (sec)");
-    ylabel("Length (m)");
+    xlabel("Time");
+    ylabel("Length");
     hold off;
 
     %% FORCE PROFILE
@@ -50,7 +50,7 @@ function [] = plotTraj(w, color, mode)
     ylim padded;
 
     title("Force Profile (over time)");
-    xlabel("Time (sec)");
+    xlabel("Time");
     ylabel("Force (BW)");
     hold off;
     
@@ -63,7 +63,7 @@ function [] = plotTraj(w, color, mode)
     % ylim([-5, 5]);
 
     title("Control (Actuated Velocity)");
-    xlabel("Time (sec)");
-    ylabel("Velocity (m/s)");
+    xlabel("Time");
+    ylabel("Velocity");
     hold off;
 end

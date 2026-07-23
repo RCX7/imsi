@@ -7,7 +7,7 @@ addpath('functions/sharedFuncs');
 addpath('warmStartTemplates');
 
 % use a previous solution as the starting guess
-warmStart = true;
+warmStart = false;
 
 clc; %close all;
 if warmStart
@@ -19,14 +19,14 @@ end
 A = []; b = []; Aeq = []; beq = [];
 
 % get constants
-MODE = 'r'; % r for running, h for hopping
+MODE = 'h'; % r for running, h for hopping
 
 [m, g, k, c, la0, laRange, xdot_target, I] = physConstants(MODE);
 [N, n_states] = simConstants();
 
 % cost function
 cost = @(w) 0;              % for debugging
-cost = @(w) costFun(w, MODE);     % for energy minimzation
+cost = @(w) costFun(w, MODE);     % for COT minimzation
 
 % bounds
 la_min = la0 - laRange;
@@ -34,12 +34,14 @@ la_max = la0 + laRange;
 
 lb_u = -inf(1, N);
 lb_states = -inf(n_states, N);      % x, xdot, zdot can be arbitrarily low
+% lb_states(1, 1) = -0.1;             % CHECK AGAIN: take a small step
 lb_states(3,:) = 0;                 % z - cannot fall through floor
 % lb_states(5,:) = la_min;            % la - some range of motion
 lb_addDecs = [0, 0, zeros(1, N)];       % time and magnitude of power
 lb = matToDec(lb_u, lb_states, lb_addDecs);
 
 ub_u = inf(1, N);
+% ub_u = [zeros(1, 28) inf(1, N-28)];
 ub_states = inf(n_states, N);
 % ub_states(5,:) = la_max;
 ub_addDecs = [inf, inf, inf(1, N)];
@@ -54,15 +56,15 @@ if warmStart
     end
     w0 = w_star;
 else
-    u = zeros(N, 1) + 1;
+    u = zeros(N, 1);
     states = zeros(n_states, N) + 0.1;
     % states(1,:) = linspace(-0.015, 0.025, N);
     states(1,:) = 0;
-    states(2,:) = 0.1;
-    states(3,:) = [linspace(1, 0.5, N/2), linspace(0.5, 1, N/2 + 1)];
+    states(2,:) = 1;
+    % states(3,:) = [linspace(1, 0.5, N/2), linspace(0.5, 1, N/2 + 1)];
     states(4, :) = -1;
-    states(5,:) = 0.75;    
-    addDecs = [0.05; 0.01; zeros(N, 1) + 0.2];  % ts, tf, power (abs, N terms)
+    states(5,:) = 0.1;    
+    addDecs = [0.5; 0.1; zeros(N, 1) + 0.2];  % ts, tf, power (abs, N terms)
     w0 = matToDec(u, states, addDecs);
 end
 
@@ -71,15 +73,19 @@ options = optimoptions("fmincon", "Display", "iter",...
 w_star = fmincon(cost, w0, A, b, Aeq, beq, lb, ub,...
     @(w) trajConstraints(w, MODE), options);
 
-if MODE=='r', color='m'; else, color='b'; end
+if MODE=='r', color='r'; else, color='b'; end
 plotTraj(w_star, color, MODE);
 disp("COST (" + MODE + "): ");
 disp(cost(w_star));
-[vAng, fAng, cAng] = getCollAngles(w_star);
+[fAng, vAng, cAng] = getCollAngles(w_star, k, c);
 disp("Collision-based analysis angles (rad): ")
-fprintf("vel: %f\n", vAng);
 fprintf("force: %f\n", fAng);
+fprintf("vel: %f\n", vAng);
 fprintf("coll: %f\n", cAng);
+
+dutyFac = getDutyFactor(w_star);
+fprintf("Duty Factor: %.2f\n", dutyFac);
+fprintf("Frequency: %.2f\n", (1 / (w_star(end-N-1) + w_star(end-N))));
 
 rmpath('functions/singleOpt');
 rmpath('functions/sharedFuncs');

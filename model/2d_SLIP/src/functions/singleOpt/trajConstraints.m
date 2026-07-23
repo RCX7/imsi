@@ -45,10 +45,12 @@ function [c, ceq] = trajConstraints(w, mode)
                           -guessed_power - true_power;];
     
     target_frequency = 1.8;
-    frequency_constraints = [total_time - 1/target_frequency;];
+    if mode == 'r', target_frequency = target_frequency * 2; end
+    % time_norm_factor
+    frequency_constraints = [total_time - ((1/target_frequency) / 0.3423);]; % normalize
 
     c = [unsignedPowerConst;
-        %-forces'
+        % -forces;
         ];
 
     ceq = [defect_constraints;
