@@ -5,12 +5,6 @@
 
 function work = computeSwingWork(dist, ts, tf, mode, dtravel)
 
-    [m, g, k, c, la0, laRange, xdot_target, I] = physConstants(mode);
-    switch mode
-        case 'r' % running
-            work = I * ((dist) / (2*tf + ts))^2;
-        case 'h' % hopping
-            work = I * ((dist) / (tf))^2;
-    end
-    work = work / (m * g * dtravel);
+    [m, g, ~, ~, ~, ~, ~, ~, I, ~, ~] = physConstants(mode);
+    work = computeSwingWorkBase(m, g, dist, ts, tf, mode, I, dtravel);
 end

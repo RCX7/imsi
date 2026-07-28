@@ -5,28 +5,28 @@
 % everything if not.
 
 function [COT, stanceCost, flightCost, tstance, tflight, next_guess] =...
-    robustMinCOT(mode, xdot_target, k, c, I, w0, prevCOTs)
+    robustMinCOT(mode, target_speed, target_freq, k, c, I, w0)
     
     arguments
         mode char
-        xdot_target
+        target_speed
+        target_freq
         k
         c
         I
         w0 = 0;
-        prevCOTs = [];
     end
     next_guess = w0;
     COT = 0;
 
     counter = 0;
-    while isNotExpected(COT, prevCOTs)
+    while isNotExpected(COT)
         if counter <= 3
             [COT, stanceCost, flightCost, tstance, tflight, next_guess] =...
-                minCOT(mode, xdot_target, k, c, I, next_guess);
+                minCOT(mode, target_speed, target_freq, k, c, I, next_guess);
         elseif counter <= 5
             [COT, stanceCost, flightCost, tstance, tflight, next_guess] =...
-                minCOT(mode, xdot_target, k, c, I, 0);
+                minCOT(mode, target_speed, target_freq, k, c, I, 0);
         else
             COT = inf; stanceCost = inf; flightCost = inf;
             tstance = inf; tflight = inf; next_guess = 0;

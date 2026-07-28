@@ -13,7 +13,9 @@ function [fAng, vAng, cAng] = getCollAngles(w, k, c)
 
     theta_i = acos(zs ./ dists);
     lambda_i = acos(xdots ./ v_totals);
-    phi_i = theta_i + lambda_i;
+    phi_i = asin(abs(cos(pi/2 - ...
+        ((sign(xs) .* theta_i) + (sign(zdots) .* lambda_i)) ...
+        )));
 
     fAng = sum(forces .* theta_i) / sum(forces);
     vAng = sum(v_totals .* lambda_i) / sum(v_totals);

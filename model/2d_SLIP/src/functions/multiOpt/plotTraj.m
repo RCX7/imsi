@@ -3,12 +3,10 @@
 % 2026-06-30
 % To plot some trajectory
 
-function [] = plotTraj(w, color, mode)
-    addpath('../sharedFuncs');
-    sharedFuncCleanUp = onCleanup(@() rmpath('../sharedFuncs'));
+function [] = plotTraj(w, color, mode, k, c)
 
-    [m, g, k, c, la0, laRange, xdot_target, I] = physConstants(mode);
-    [N, n_states] = simConstants();
+    [m, g, la0] = physConstants();
+    [N, ~] = simConstants();
     [control, states, addDecs] = decToMats(w);
     [xs, xdots, zs, zdots, las] = extractStates(states);
 
@@ -34,7 +32,6 @@ function [] = plotTraj(w, color, mode)
     hold on;
     plot(linspace(0, addDecs(1), N), las, (color + "o-"));
     xlim padded;
-    ylim([la0-laRange, la0+laRange]);
 
     title("Actuated Length");
     xlabel("Time (sec)");
@@ -43,7 +40,7 @@ function [] = plotTraj(w, color, mode)
 
     %% FORCE PROFILE
     subplot(2, 2, 3) 
-    forces = computeForces(states, control, mode);
+    forces = computeForces(states, control, k, c);
     forces = forces / (m * g);
     hold on;
     plot(linspace(0, addDecs(1), N), forces, (color + "o-"));

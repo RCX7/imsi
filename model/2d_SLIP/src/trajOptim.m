@@ -7,7 +7,7 @@ addpath('functions/sharedFuncs');
 addpath('warmStartTemplates');
 
 % use a previous solution as the starting guess
-warmStart = false;
+warmStart = true;
 
 clc; %close all;
 if warmStart
@@ -19,31 +19,28 @@ end
 A = []; b = []; Aeq = []; beq = [];
 
 % get constants
-MODE = 'h'; % r for running, h for hopping
+MODE = 'r'; % r for running, h for hopping
 
-[m, g, k, c, la0, laRange, xdot_target, I] = physConstants(MODE);
+[m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN] =...
+    physConstants(MODE);
 [N, n_states] = simConstants();
 
 % cost function
-cost = @(w) 0;              % for debugging
+cost = @(w) 0;                    % for debugging
 cost = @(w) costFun(w, MODE);     % for COT minimzation
 
 % bounds
-la_min = la0 - laRange;
-la_max = la0 + laRange;
+% la_min = la0 - laRange;
+% la_max = la0 + laRange;
 
 lb_u = -inf(1, N);
 lb_states = -inf(n_states, N);      % x, xdot, zdot can be arbitrarily low
-% lb_states(1, 1) = -0.1;             % CHECK AGAIN: take a small step
 lb_states(3,:) = 0;                 % z - cannot fall through floor
-% lb_states(5,:) = la_min;            % la - some range of motion
 lb_addDecs = [0, 0, zeros(1, N)];       % time and magnitude of power
 lb = matToDec(lb_u, lb_states, lb_addDecs);
 
 ub_u = inf(1, N);
-% ub_u = [zeros(1, 28) inf(1, N-28)];
 ub_states = inf(n_states, N);
-% ub_states(5,:) = la_max;
 ub_addDecs = [inf, inf, inf(1, N)];
 ub = matToDec(ub_u, ub_states, ub_addDecs);
 
@@ -75,6 +72,16 @@ w_star = fmincon(cost, w0, A, b, Aeq, beq, lb, ub,...
 
 if MODE=='r', color='r'; else, color='b'; end
 plotTraj(w_star, color, MODE);
+
+%% printing information
+disp("Current run SI units (except I and k):");
+fprintf("Frequency: %.2f steps/s\n", ...
+         1 / (((w_star(end-N-1) + w_star(end-N)) * t_sim)) );
+unSpeed = target_speed * (l_uN / t_sim);
+fprintf("Speed: %.2f m/s (%.2f mph)\n", unSpeed, unSpeed * 2.23694)
+fprintf("Leg Inertia: %.3f | k:  %.3f \n", ...
+         I, k);
+
 disp("COST (" + MODE + "): ");
 disp(cost(w_star));
 [fAng, vAng, cAng] = getCollAngles(w_star, k, c);
@@ -85,7 +92,6 @@ fprintf("coll: %f\n", cAng);
 
 dutyFac = getDutyFactor(w_star);
 fprintf("Duty Factor: %.2f\n", dutyFac);
-fprintf("Frequency: %.2f\n", (1 / (w_star(end-N-1) + w_star(end-N))));
 
 rmpath('functions/singleOpt');
 rmpath('functions/sharedFuncs');

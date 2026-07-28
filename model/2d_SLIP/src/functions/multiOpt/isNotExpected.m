@@ -9,7 +9,7 @@
 % Outputs:
 %   - flag: true if not expected
 
-function flag = isNotExpected(cot, prevCOTs)
+function flag = isNotExpected(cot)
     % COMPLEX CALCULATION
     % prevCOTs = prevCOTs(prevCOTs ~= 0 & ~isinf(prevCOTs));
     % %disp(prevCOTs);
