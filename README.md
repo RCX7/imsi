@@ -13,3 +13,6 @@
     - **multi optimization**: developed based on single optimization trials. able to optimize COT automatically. used in parameter analyses (paramAnalysis.m)
     - **shared functions**: functions common to both single and multi optimziation
 -   warmStartTemplates: generic optimal solutions to serve as a starting guess for optimization.
+-   figures: MATLAB figures that result from the analyses
+-   dataspaces (not as well updated):
+-   2026-7-28: *many of the files in dataspaces and functions is outdated. aim to sort through them and label them / organize them later*
