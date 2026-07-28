@@ -6,7 +6,9 @@
 
 function [xf, xdotf, zf, zdotf] = flightKinematics(xi, xdoti, zi, zdoti, ts)
     % retrieve constants here
-    g = 9.81;
+    % g = 9.81;
+    % [~, g, ~] = physConstants();
+    g = 1;
     xdotf = ts * 0 + xdoti;
     xf = xi + xdoti .* ts;
     zf = zi + (zdoti .* ts) - ((0.5 * g) * ts.^2);

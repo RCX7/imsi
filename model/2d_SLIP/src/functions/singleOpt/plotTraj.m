@@ -4,11 +4,9 @@
 % To plot some trajectory
 
 function [] = plotTraj(w, color, mode)
-    addpath('../sharedFuncs');
-    sharedFuncCleanUp = onCleanup(@() rmpath('../sharedFuncs'));
 
-    [m, g, k, c, la0, laRange, xdot_target, I] = physConstants(mode);
-    [N, n_states] = simConstants();
+    [m, g, ~, ~, ~, ~, ~, ~, ~, t_sim, l_uN] = physConstants(mode);
+    [N, ~] = simConstants();
     [control, states, addDecs] = decToMats(w);
     [xs, xdots, zs, zdots, las] = extractStates(states);
 
@@ -17,7 +15,7 @@ function [] = plotTraj(w, color, mode)
     hold on;
     plot(0, 0, "Marker","+", "Color","r", "LineWidth",3);
     plot(xs, zs, (color + "o-"));
-    [xf, xdotf, zf, zdotf] = flightKinematics(xs(end), xdots(end),...
+    [xf, ~, zf, ~] = flightKinematics(xs(end), xdots(end),...
         zs(end), zdots(end), 0:0.01:addDecs(2));
     plot(xf, zf, "b");
     xlim padded;
@@ -32,9 +30,10 @@ function [] = plotTraj(w, color, mode)
     %% ACTUATED LENGTH
     subplot(2, 2, 2)
     hold on;
-    plot(linspace(0, addDecs(1), N), las, (color + "o-"));
+    plot(t_sim * linspace(0, addDecs(1), N), las * l_uN, (color + "o-"));
     xlim padded;
-    ylim([la0-laRange, la0+laRange]);
+    ylim padded;
+    % ylim([la0-laRange, la0+laRange]);
 
     title("Actuated Length");
     xlabel("Time (sec)");
@@ -46,7 +45,7 @@ function [] = plotTraj(w, color, mode)
     forces = computeForces(states, control, mode);
     forces = forces / (m * g);
     hold on;
-    plot(linspace(0, addDecs(1), N), forces, (color + "o-"));
+    plot(t_sim * linspace(0, addDecs(1), N), forces, (color + "o-"));
     xlim padded;
     ylim padded;
 
@@ -58,12 +57,13 @@ function [] = plotTraj(w, color, mode)
     %% CONTROL
     subplot(2, 2, 4) 
     hold on;
-    plot(linspace(0, addDecs(1), N), control, (color + "o-"));
+    plot(t_sim * linspace(0, addDecs(1), N), control * (l_uN / t_sim), (color + "o-"));
     xlim padded;
-    ylim([-5, 5]);
+    ylim padded;
+    % ylim([-5, 5]);
 
     title("Control (Actuated Velocity)");
     xlabel("Time (sec)");
-    ylabel("Velocity (m/s)");
+    ylabel("Velocity (m / s)");
     hold off;
 end

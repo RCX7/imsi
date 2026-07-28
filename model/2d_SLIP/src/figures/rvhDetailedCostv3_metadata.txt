@@ -1,0 +1,8 @@
+clc; clear; close all;
+
+m = 1;
+k = 15;
+c = 0.4;
+I = 4.63e-2;
+
+speeds = 0.25:0.25:7;

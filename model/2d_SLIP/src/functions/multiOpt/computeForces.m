@@ -7,8 +7,5 @@
 
 function forces = computeForces(states, control, k, c)
     [xs, xdots, zs, zdots, las] = extractStates(states);
-
-    dists = sqrt(zs.^2 + xs.^2);
-    ddists = (xs .* xdots + zs .* zdots) ./ dists;
-    forces = (k * (las - dists)) + (c * (control - ddists));
+    forces = computeForcesBase(xs, zs, xdots, zdots, las, control, k, c);
 end

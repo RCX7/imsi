@@ -14,14 +14,22 @@
 % OUTPUTS:
 %   - cost of transport (with leg inertia)
 
-function COT = minCOT(mode, xdot_target, k, c, I)
-    assert (mode == 'h' | mode == 'r');
-    clearvars -except w_star mode xdot_target k c I;
+function [COT, stanceCost, flightCost, tstance, tflight, w_star] =...
+    minCOT(mode, target_speed, target_freq, k, c, I, init_guess)
 
-    addpath('../../warmStartTemplates');
-    addpath('../sharedFuncs');
-    sharedFuncsCleanUp = onCleanup(@() rmpath('../sharedFuncs'));
-    wstCleanUp = onCleanup(@() rmpath('../../warmStartTemplates'));
+    arguments
+        mode char
+        target_speed
+        target_freq
+        k
+        c
+        I
+        init_guess = 0;
+    end
+    fprintf("Mode: %s | Speed: %.2f | k, c, I: %d %.2f %.5f\n", mode, target_speed, k, c, I);
+
+    assert (mode == 'h' | mode == 'r');
+    clearvars -except w_star mode target_speed target_freq k c I init_guess;
 
     A = []; b = []; Aeq = []; beq = [];
     
@@ -29,40 +37,41 @@ function COT = minCOT(mode, xdot_target, k, c, I)
     [N, n_states] = simConstants();
     if mode == 'h'
         I = I * 2;
-        k = k * 2;
-        c = c * 2;
+        target_freq = target_freq * 2;
     end
     
     % cost function and constraints
     cost = @(w) costFun(w, mode, I);     % for energy minimzation
-    constraints = @(w) trajConstraints(w, xdot_target, k, c);
+    constraints = @(w) trajConstraints(w, target_speed, target_freq, k, c, mode);
     
     % define bounds
     lb_u = -inf(1, N);
     lb_states = -inf(n_states, N);      % x, xdot, zdot can be arbitrarily low
     lb_states(3,:) = 0;                 % z - cannot fall through floor
-    % lb_states(5,:) = la_min;            % la - some range of motion
-    lb_addDecs = [1e-3, 1e-3, zeros(1, N)];       % time and magnitude of power
+    lb_addDecs = [0, 0, zeros(1, N)];       % time and magnitude of power
     lb = matToDec(lb_u, lb_states, lb_addDecs);
     
     ub_u = inf(1, N);
     ub_states = inf(n_states, N);
-    % ub_states(5,:) = la_max;
     ub_addDecs = [inf, inf, inf(1, N)];
     ub = matToDec(ub_u, ub_states, ub_addDecs);
+
     
     % decision vector (inital guess)
-    if ~exist('w_star', 'var')
+    if init_guess == 0
         disp("using warm start template");
-        if mode == 'r', load runWarmStart;
-        else, load hopWarmStart; end
+        if mode == 'r', load('warmStartTemplates/runN35.mat');
+        else, load('warmStartTemplates/hopN35.mat'); end
+        w0 = w_star;
+    else
+        w0 = init_guess;
     end
-    w0 = w_star;
     
-    options = optimoptions("fmincon", "Display", "iter",...
-        "MaxFunctionEvaluations",40000, "MaxIterations",1000);
+    options = optimoptions("fmincon", "Display", "notify-detailed", ...
+        "MaxFunctionEvaluations",200000, "MaxIterations",1000);
     w_star = fmincon(cost, w0, A, b, Aeq, beq, lb, ub,...
         constraints, options);
     
-    COT = cost(w_star);
+    [COT, stanceCost, flightCost, tstance, tflight]...
+    = detailedCost(w_star, mode, I);
 end

@@ -5,19 +5,6 @@
 % optimization
 
 function [cost] = costFun(w, mode, I)
-
-    [u, states, addDecs] = decToMats(w);
-    [N, n_states] = simConstants();
-    [xs, xdots, zs, zdots, las] = extractStates(states);
-    [xf, xdotf, zf, zdotf] = flightKinematics( ...
-        xs(end), xdots(end), zs(end), zdots(end), addDecs(2));
-    
-    % swingCost = 0;
-    dist = xf - xs(1);
-    % input 'r' for running, 'h' for hopping.
-    swingCost = computeSwingWork(dist, addDecs(1), addDecs(2), mode, I);
-    
-    %disp(addDecs(1:2));
-    %disp(addDecs(3:end))
-    cost = trapz(addDecs(1), addDecs(3:2+N)) + swingCost;
+    [m, g, ~] = physConstants();
+    [cost, ~, ~, ~, ~] = costFunBase(w, m, g, I, mode);
 end

@@ -6,6 +6,6 @@
 
 function [m, g, la0] = physConstants()
     m = 1;
-    g = 9.81;
-    la0 = 0.2;
+    g = 1;
+    la0 = 1;
 end
