@@ -19,7 +19,7 @@ end
 A = []; b = []; Aeq = []; beq = [];
 
 % get constants
-MODE = 'r'; % r for running, h for hopping
+MODE = 'h'; % r for running, h for hopping
 
 [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN] =...
     physConstants(MODE);
@@ -49,7 +49,7 @@ if warmStart
     if ~exist('w_star', 'var')
         disp("using warm start template");
         if MODE == 'r', load('runN35.mat');
-        else, load('hopN35.mat'); end
+        else, load('hopN35v2.mat'); end
     end
     w0 = w_star;
 else
@@ -66,7 +66,7 @@ else
 end
 
 options = optimoptions("fmincon", "Display", "iter",...
-    "MaxFunctionEvaluations",200000, "MaxIterations",1000);
+    "MaxFunctionEvaluations",80000, "MaxIterations",1000);
 w_star = fmincon(cost, w0, A, b, Aeq, beq, lb, ub,...
     @(w) trajConstraints(w, MODE), options);
 

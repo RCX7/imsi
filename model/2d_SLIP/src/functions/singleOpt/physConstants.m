@@ -11,7 +11,7 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     %% UNNORMALIZED DATA
     g_uN = 9.81;
     % l_uN = 1.15;  % distance from COM to COP in meters
-    l_uN = 1.1;     % hip height in m
+    l_uN = 0.9;     % hip height in m
     target_speed_uN = 2;  % in meters per second
     target_freq_uN = 0;   % set to 0 to unconstrain
     if mode == 'r', target_freq_uN = target_freq_uN * 2; end
@@ -19,9 +19,10 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     %% NORMALIZED DATA
     m = 1;
     g = 1;
+    k=25;       % experiment with k = 25 for both
     % k = 28.028;
     % k = 30.238;
-    k = 42.389;  % running fit
+    % k = 42.389;  % running fit
     % k = 50;
     % k = 62.055;        % vertical stiffness fit
     c = 0.3;
@@ -35,10 +36,11 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     % I = 0.08;
 
     if mode == 'h'
-        k = 16.677;  % method e fit
+        k = 18;
+        % k = 16.677;  % method e fit
         % k = 22.141;
         % k = 31.0771;   % vertical stiffness fit
-        c = 0.4;
+        c = 0.3;
         I = I*2;
     end
 end

@@ -4,7 +4,7 @@
 % A base function to modularize the logic for the trajectory constraints.
 % Derived versions exist for singleOpt and multiOpt
 
-function [const, const_eq] = trajConstraintsBase(w, m, g, la0, target_speed, target_freq, k, c, mode)
+function [const, const_eq] = trajConstraintsBase(w, m, g, la0, target_speed, target_freq, k, c)
 
     % retrieve constants
     [N, ~] = simConstants();

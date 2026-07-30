@@ -37,12 +37,12 @@ function [COT, stanceCost, flightCost, tstance, tflight, w_star] =...
     [N, n_states] = simConstants();
     if mode == 'h'
         I = I * 2;
-        target_freq = target_freq * 2;
+        % target_freq = target_freq * 2;
     end
     
     % cost function and constraints
     cost = @(w) costFun(w, mode, I);     % for energy minimzation
-    constraints = @(w) trajConstraints(w, target_speed, target_freq, k, c, mode);
+    constraints = @(w) trajConstraints(w, target_speed, target_freq, k, c);
     
     % define bounds
     lb_u = -inf(1, N);
@@ -60,15 +60,15 @@ function [COT, stanceCost, flightCost, tstance, tflight, w_star] =...
     % decision vector (inital guess)
     if init_guess == 0
         disp("using warm start template");
-        if mode == 'r', load('warmStartTemplates/runN35.mat');
-        else, load('warmStartTemplates/hopN35.mat'); end
+        if mode == 'r', load('warmStartTemplates/runN35v3.mat');
+        else, load('warmStartTemplates/hopN35v3.mat'); end
         w0 = w_star;
     else
         w0 = init_guess;
     end
     
     options = optimoptions("fmincon", "Display", "notify-detailed", ...
-        "MaxFunctionEvaluations",200000, "MaxIterations",1000);
+        "MaxFunctionEvaluations",80000, "MaxIterations",1000);
     w_star = fmincon(cost, w0, A, b, Aeq, beq, lb, ub,...
         constraints, options);
     
