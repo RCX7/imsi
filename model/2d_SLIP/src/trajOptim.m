@@ -16,6 +16,7 @@ else
     clearvars -except warmStart;
 end
 
+preserveVars = true;
 A = []; b = []; Aeq = []; beq = [];
 
 % get constants
@@ -92,6 +93,17 @@ fprintf("coll: %f\n", cAng);
 
 dutyFac = getDutyFactor(w_star);
 fprintf("Duty Factor: %.2f\n", dutyFac);
+
+fprintf("True knorm (adjusted for length): %f\n", k / l_uN);
+fprintf("True cnorm (adjusted for length): %f\n", c / sqrt(l_uN));
+
+% preserves variables
+if preserveVars
+    [control, states, addDecs] = decToMats(w_star);
+    [xs, xdots, zs, zdots, las] = extractStates(states);
+    forces = computeForces(states, control, MODE);
+    forces = forces / (m * g);
+end
 
 rmpath('functions/singleOpt');
 rmpath('functions/sharedFuncs');

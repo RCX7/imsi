@@ -26,16 +26,25 @@ mse_npoints = 35;
 [~, ~, ~, ~, ~, ~, target_speed, target_freq, I, t_sim, l_uN] =...
     physConstants(gait);
 
-ks = 40:2.5:70;
-cs = 0.3:0.05:0.8;
+switch gait
+    case 'r'
+        ks = 40:2.5:70;
+    case 'h'
+        ks = 10:2.5:60;
+end
+
+cs = 0.1:0.05:0.6;
+
 [k_mesh, c_mesh] = meshgrid(ks, cs);
 k_vec = k_mesh(:);
 c_vec = c_mesh(:);
 
 
-load("avgForceCurves/" + curr_trial + "_ftotal_curve");  % called "average_stride_ftotal"
+load("avgForceCurves/" + curr_trial + "_ftotal_curve", ...
+    "average_stride_ftotal", "tstride_avg");  % called "average_stride_ftotal"
 m = 92.65; g = 9.81;
 average_stride_ftotal = average_stride_ftotal / (m * g);
+num_exp_pts = numel(average_stride_ftotal);
 
 rmpath(singleOpt_path);
 
@@ -45,44 +54,61 @@ mse_landscape = zeros(n_sims, 1);
 
 %% parallelize optimizations
 addpath(multiOpt_path);
-% parfor i=1:n_sims
-for j=1:6
-    i = j * 15;
+parfor i=1:n_sims
+% for j=1:6
+%     i = j * 15;
     k = k_vec(i);
     c = c_vec(i);
     
     [~, ~, ~, ~, ~, w_star] = ...
                 robustMinCOT(gait, target_speed, target_freq, k, c, I, 0);
     if w_star
-        [control, states, addDecs] = decToMats(w_star);
-        mdl_forces = computeForces(states, control, k, c);
-        
-        %%  interpolate to same timings
-        mdl_tstance = addDecs(1);
-        exp_tstance = numel(average_stride_ftotal) * 5e-4;
-        tmax = max([mdl_tstance, exp_tstance]);  % find which time is longer
-        
-        mdl_forces = interp1(linspace(5e-5, mdl_tstance, num_mdl_pts), mdl_forces, linspace(5e-5, tmax, mse_npoints));
-        exp_forces = interp1(5e-4:5e-4:exp_tstance, average_stride_ftotal, linspace(5e-5, tmax, mse_npoints));
-        mdl_forces(isnan(mdl_forces)) = 0;
-        exp_forces(isnan(exp_forces)) = 0;
+        [~, mdl_forces, exp_forces] = norm_and_plot_mdl_vs_exp( ...
+                                w_star, average_stride_ftotal, ...
+                                k, c, t_sim, tstride_avg, ...
+                                num_mdl_pts, num_exp_pts, mse_npoints ...
+                            );
     
         %% measure MSE and store
         mse = fcurve_mse(mdl_forces, exp_forces);
         mse_landscape(i) = mse;
     end
-    subplot(2, 3, j);
-    title("Index: " + i + " k: " + k + " c: " + c + " mse: " + mse);
-    hold on;
-    plot(mdl_forces);
-    plot(exp_forces);
-    hold off;
-% end
+    % subplot(2, 3, j);
+    % title("Index: " + i + " k: " + k + " c: " + c + " mse: " + mse);
+    % hold on;
+    % plot(t_plot, mdl_forces);
+    % plot(t_plot, exp_forces);
+    % xlabel("Time (secs)");
+    % ylabel("Force (BWs)");
+    % hold off;
 end
 
 mse_landscape = reshape(mse_landscape, size(k_mesh));
 mse_landscape(mse_landscape == 0) = max(mse_landscape, [], "all");
-% surf(ks, cs, mse_landscape);
+surf(ks, cs, mse_landscape);
+
+% extract and plot best fit
+[best_c_idx, best_k_idx] = find(mse_landscape == min(mse_landscape, [],"all"));
+best_k = ks(best_k_idx);
+best_c = cs(best_c_idx);
+fprintf("Best fitting values of k, c: %.2f, %.2f \n", best_k, best_c);
+
+
+[~, ~, ~, ~, ~, w_star] = robustMinCOT(gait, target_speed, target_freq, best_k, best_c, I, 0);
+[t_plot, mdl_forces, exp_forces] = norm_and_plot_mdl_vs_exp( ...
+                        w_star, average_stride_ftotal, ...
+                        best_k, best_c, t_sim, tstride_avg, ...
+                        num_mdl_pts, num_exp_pts, mse_npoints ...
+                    );
+% some code duplication here ... to be fixed
+figure;
+title("Best fitting plot");
+hold on;
+plot(t_plot, mdl_forces);
+plot(t_plot, exp_forces);
+xlabel("Time (secs)");
+ylabel("Force (BWs)");
+hold off;
 
 rmpath(multiOpt_path);
 rmpath(shared_func_path);

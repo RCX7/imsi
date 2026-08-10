@@ -44,12 +44,13 @@ function [] = plotTraj(w, color, mode)
     subplot(2, 2, 3) 
     forces = computeForces(states, control, mode);
     forces = forces / (m * g);
+    total_impulse = trapz(addDecs(1) / (numel(forces) - 1), forces);
     hold on;
-    plot(t_sim * linspace(0, addDecs(1), N), forces, (color + "o-"));
+    plot(linspace(0, addDecs(1), N), forces, (color + "o-"));
     xlim padded;
     ylim padded;
 
-    title("Force Profile (over time)");
+    title("Force Profile (over time) | Total impulse: " + total_impulse);
     xlabel("Time (sec)");
     ylabel("Force (BW)");
     hold off;

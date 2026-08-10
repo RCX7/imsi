@@ -4,7 +4,7 @@
 % Computes the duty factor for a given w_star
 
 function [df] = getDutyFactor(w)
-    [control, states, addDec] = decToMats(w);
+    [~, ~, addDec] = decToMats(w);
     
     t_stance = addDec(1);
     t_flight = addDec(2);

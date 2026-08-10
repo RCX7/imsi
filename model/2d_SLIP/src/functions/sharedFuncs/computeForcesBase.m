@@ -10,4 +10,6 @@ function forces = computeForcesBase(xs, zs, xdots, zdots, las, control, k, c)
     dists = sqrt(zs.^2 + xs.^2);
     ddists = (xs .* xdots + zs .* zdots) ./ dists;
     forces = (k * (las - dists)) + (c * (control - ddists));
+
+    forces = max(0, forces); % clamp forces
 end

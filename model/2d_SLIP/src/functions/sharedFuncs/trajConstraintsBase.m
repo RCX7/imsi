@@ -17,7 +17,6 @@ function [const, const_eq] = trajConstraintsBase(w, m, g, la0, target_speed, tar
     % compute defect constraints for trajectory kinematics
     dt = addDecs(1) / (N - 1);
     slopes = computeSlopesBase(xs, xdots, zs, zdots, las, control, m, g, k, c);
-    % slopes = computeSlopes(states, control, mode);
     defect_constraints = states(:, 2:end) - (states(:, 1:end-1) + slopes * dt);
     defect_constraints = defect_constraints(:);
 
