@@ -38,12 +38,13 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     % I = 0.1;
 
     if mode == 'h'
-        k = 25;
+        k = 22.5;
+        % k = 25;      % testing equal fits
         % k = 18;
         % k = 16.677;  % method e fit
-        % k = 22.141;
-        % k = 31.0771;   % vertical stiffness fit
-        c = 0.2;
+        % k = 22.141;  % something else...?
+        % k = 31.0771; % vertical stiffness fit
+        c = 0.1;       % gridded search values
         I = I*2;
     end
 end
