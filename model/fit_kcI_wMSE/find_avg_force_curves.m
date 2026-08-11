@@ -12,7 +12,7 @@ disp("Data source: " + DATAPATH);
 addpath(DATAPATH);
 
 %% settings
-gait='h';
+gait='r';
 trials = {'hop_1ms_4min'; 'run_1ms_4min'};
 if gait == 'r', curr_trial = trials{2}; else, curr_trial = trials{1}; end
 m = 92.65;      % body mass
@@ -22,7 +22,12 @@ tsamp = 1 / fs; % sampling period
 
 %% import and extract the data
 force_data = importdata([curr_trial '.mot']);  % for loading from S01
-bounds_mask = 400:19750;     % needs to be manually tuned.
+switch gait
+    case 'r'
+        bounds_mask = 100:19000;     % needs to be manually tuned.
+    case 'h'
+        bounds_mask = 300:19500;
+end
 
 t = force_data.data(:,1);
 t = t(bounds_mask);

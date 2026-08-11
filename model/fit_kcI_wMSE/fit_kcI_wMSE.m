@@ -18,17 +18,24 @@ addpath(singleOpt_path);
 addpath(warmStartTemp_path);
 %% settings and testing conditions
 gait = 'r';
-trials = {'hop_1ms_4min'; 'run_1ms_4min'};
+unc_freq = true;
+% trials = {'hop_1ms_4min'; 'run_1ms_4min'};
+trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
 if gait == 'r', curr_trial = trials{2}; else, curr_trial = trials{1}; end
-mse_npoints = 35;
+mse_npoints = 50;
 
 [num_mdl_pts, ~] = simConstants();
 [~, ~, ~, ~, ~, ~, target_speed, target_freq, I, t_sim, l_uN] =...
     physConstants(gait);
 
+if unc_freq
+    target_freq = 0;
+end
+
 switch gait
     case 'r'
-        ks = 40:2.5:70;
+        % ks = 40:2.5:70; for constrained version
+        ks = 15:2.5:50;
     case 'h'
         ks = 10:2.5:60;
 end
@@ -63,7 +70,7 @@ parfor i=1:n_sims
     [~, ~, ~, ~, ~, w_star] = ...
                 robustMinCOT(gait, target_speed, target_freq, k, c, I, 0);
     if w_star
-        [~, mdl_forces, exp_forces] = norm_and_plot_mdl_vs_exp( ...
+        [t_plot, mdl_forces, exp_forces] = norm_and_plot_mdl_vs_exp( ...
                                 w_star, average_stride_ftotal, ...
                                 k, c, t_sim, tstride_avg, ...
                                 num_mdl_pts, num_exp_pts, mse_npoints ...
