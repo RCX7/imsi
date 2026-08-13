@@ -20,7 +20,7 @@ preserveVars = true;
 A = []; b = []; Aeq = []; beq = [];
 
 % get constants
-MODE = 'h'; % r for running, h for hopping
+MODE = 'r'; % r for running, h for hopping
 
 [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN] =...
     physConstants(MODE);
@@ -49,7 +49,7 @@ ub = matToDec(ub_u, ub_states, ub_addDecs);
 if warmStart
     if ~exist('w_star', 'var')
         disp("using warm start template");
-        if MODE == 'r', load('runN35.mat');
+        if MODE == 'r', load('runN35_kc275015.mat');
         else, load('hopN35v2.mat'); end
     end
     w0 = w_star;

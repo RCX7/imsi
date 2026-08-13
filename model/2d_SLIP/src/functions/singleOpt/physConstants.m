@@ -22,7 +22,7 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     % I_scale = m_uN * (l_uN^2);            % Inertia scale (kg*m^2)
 
     %% UNNORMALIZED TARGET INPUTS
-    target_speed_uN = 3;                % m/s
+    target_speed_uN = 1;                % m/s
     target_freq_uN  = 0;                % Hz
     if mode == 'r', target_freq_uN = target_freq_uN * 2; end
     
@@ -38,16 +38,14 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
 
     if mode == 'r'
         % unconstrained
-        k = 27.5;           % Dimensionless stiffness k*
-        c = 0.15;           % Dimensionless damping c*
+        k = 27.5; c = 0.15;
+        % constrained
+        % k = 22.5; c = 0.1;
     elseif mode == 'h'
         % unconstrained
-        k = 20;
-        c = 0.1;
-        % k = 22.5; % unnormalized
-        % c = 0.1;  % unnormalized
-        % k = 19.565217;
-        % c = 0.0933;
+        k = 20; c = 0.1;
+        % constrained
+        % k = 42.5; c = 0.2;
         I = I * 2;
     end
 end
