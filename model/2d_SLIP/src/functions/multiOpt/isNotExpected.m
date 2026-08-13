@@ -9,7 +9,7 @@
 % Outputs:
 %   - flag: true if not expected
 
-function flag = isNotExpected(cot)
+function flag = isNotExpected(cot, ttotal)
     % COMPLEX CALCULATION
     % prevCOTs = prevCOTs(prevCOTs ~= 0 & ~isinf(prevCOTs));
     % %disp(prevCOTs);
@@ -26,5 +26,5 @@ function flag = isNotExpected(cot)
     % end
 
     % SIMPLE CALCULATION - WORKS ALMOST AS WELL?
-    flag = (cot > 8 | cot <= 0);
+    flag = (cot > 1.2 | cot <= 0.25) | (ttotal > 0.8 | ttotal < 0.2);
 end

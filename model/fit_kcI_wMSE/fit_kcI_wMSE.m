@@ -98,6 +98,9 @@ surf(ks, cs, mse_landscape);
 [best_c_idx, best_k_idx] = find(mse_landscape == min(mse_landscape, [],"all"));
 best_k = ks(best_k_idx);
 best_c = cs(best_c_idx);
+best_k_norm = best_k / l_uN;
+best_c_norm = best_c / sqrt(l_uN);
+
 fprintf("Best fitting values of k, c: %.2f, %.2f \n", best_k, best_c);
 
 

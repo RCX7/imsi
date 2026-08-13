@@ -94,8 +94,8 @@ fprintf("coll: %f\n", cAng);
 dutyFac = getDutyFactor(w_star);
 fprintf("Duty Factor: %.2f\n", dutyFac);
 
-fprintf("True knorm (adjusted for length): %f\n", k / l_uN);
-fprintf("True cnorm (adjusted for length): %f\n", c / sqrt(l_uN));
+% fprintf("True knorm (adjusted for length): %f\n", k / l_uN);
+% fprintf("True cnorm (adjusted for length): %f\n", c / sqrt(l_uN));
 
 % preserves variables
 if preserveVars

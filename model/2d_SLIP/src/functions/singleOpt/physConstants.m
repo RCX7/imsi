@@ -8,43 +8,46 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
             = physConstants(mode)
     assert(mode == 'r' | mode == 'h')
     
-    %% UNNORMALIZED DATA
-    g_uN = 9.81;
-    l_uN = 1.15;     % hip height in m
-    target_speed_uN = 1;  % in meters per second
-    target_freq_uN = 1.8;   % set to 0 to unconstrain
-    if mode == 'r', target_freq_uN = target_freq_uN * 2; end
+    %% UNNORMALIZED (PHYSICAL) BASE SCALES
+    g_uN = 9.81;        % m/s^2
+    % m_uN = 80;          % kg (example body mass)
+    l_uN = 1.15;        % m (unnormalized leg length)
+    % l_uN = 1;
+    
+    % Derived unit scales
+    t_sim = sqrt(l_uN / g_uN);              % Time scale (seconds)
+    v_scale = (l_uN / t_sim);               % Velocity scale (m/s)
+    % k_scale = (m_uN * g_uN) / l_uN;       % Stiffness scale (N/m)
+    % c_scale = m_uN / t_sim;               % Damping scale (N*s/m)
+    % I_scale = m_uN * (l_uN^2);            % Inertia scale (kg*m^2)
 
-    %% NORMALIZED DATA
+    %% UNNORMALIZED TARGET INPUTS
+    target_speed_uN = 3;                % m/s
+    target_freq_uN  = 0;                % Hz
+    if mode == 'r', target_freq_uN = target_freq_uN * 2; end
+    
+    %% DIMENSIONLESS CONSTANTS (SIMULATION UNITS)
     m = 1;
     g = 1;
-    % k=25;       % experiment with k = 25 for both
-    % k = 28.028;
-    % k = 30.238;
-    % k = 42.389;  % running fit
-    % k = 62.055;        % vertical stiffness fit
-
-    k = 50;
-    c = 0.4;
     la0 = 1;
-    t_sim = sqrt(l_uN / g_uN);  % unit of simulation time, in seconds
-    target_freq = target_freq_uN * t_sim;
+    laRange = 10;
     
-    laRange = 10; % unused - obsolete
-    target_speed = target_speed_uN * (t_sim / l_uN);
-    % I = 0.0;
-    I = 0.0463; % maybe normalize somehow
-    % I = 0.08;
-    % I = 0.1;
+    target_speed = target_speed_uN / v_scale; 
+    target_freq  = target_freq_uN * t_sim;    
+    I = 0.0463;             % Dimensionless inertia I*
 
-    if mode == 'h'
-        k = 22.5;
-        % k = 25;      % testing equal fits
-        % k = 18;
-        % k = 16.677;  % method e fit
-        % k = 22.141;  % something else...?
-        % k = 31.0771; % vertical stiffness fit
-        c = 0.1;       % gridded search values
-        I = I*2;
+    if mode == 'r'
+        % unconstrained
+        k = 27.5;           % Dimensionless stiffness k*
+        c = 0.15;           % Dimensionless damping c*
+    elseif mode == 'h'
+        % unconstrained
+        k = 20;
+        c = 0.1;
+        % k = 22.5; % unnormalized
+        % c = 0.1;  % unnormalized
+        % k = 19.565217;
+        % c = 0.0933;
+        I = I * 2;
     end
 end
