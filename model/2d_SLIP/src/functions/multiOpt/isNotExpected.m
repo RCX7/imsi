@@ -26,5 +26,13 @@ function flag = isNotExpected(cot, ttotal)
     % end
 
     % SIMPLE CALCULATION - WORKS ALMOST AS WELL?
-    flag = (cot > 1.2 | cot <= 0.25) | (ttotal > 0.8 | ttotal < 0.2);
+    cot_cond = (cot > 0.15 | cot <= 0.008);
+    time_cond = (ttotal > 1.5 | ttotal < 0.2);
+    flag = cot_cond | time_cond;
+    
+    if (cot_cond && cot ~= 0)
+        fprintf("COT condition failed: %.3f\n", cot);
+    elseif (time_cond && ttotal ~= 0)
+        fprintf("Time condition failed: %.3f\n", ttotal);
+    end
 end

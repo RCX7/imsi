@@ -46,7 +46,7 @@ function [] = plotTraj(w, color, mode)
     forces = forces / (m * g);
     total_impulse = trapz(addDecs(1) / (numel(forces) - 1), forces);
     hold on;
-    plot(linspace(0, addDecs(1), N), forces, (color + "o-"));
+    plot(linspace(0, addDecs(1) * t_sim, N), forces, (color + "o-"));
     xlim padded;
     ylim padded;
 

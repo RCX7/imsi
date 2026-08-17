@@ -16,8 +16,8 @@ function [cost, stanceCost, swingCost, tstance, tflight] = costFunBase(w, m, g, 
     dtravel = xf - xs(1);
     % input 'r' for running, 'h' for hopping.
     swingCost = computeSwingWorkBase(m, g, dist, addDecs(1), addDecs(2), mode, I, dtravel);
-    stanceCost = trapz(addDecs(1), addDecs(3:2+N));
-    cost = stanceCost + swingCost;
+    stanceCost = trapz((addDecs(1) / (N - 1)), addDecs(3:2+N)); % fixed this
+    cost = (stanceCost + swingCost);
 
     tstance = addDecs(1);
     tflight = addDecs(2);

@@ -20,7 +20,7 @@ preserveVars = true;
 A = []; b = []; Aeq = []; beq = [];
 
 % get constants
-MODE = 'r'; % r for running, h for hopping
+MODE = 'h'; % r for running, h for hopping
 
 [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN] =...
     physConstants(MODE);
@@ -50,7 +50,7 @@ if warmStart
     if ~exist('w_star', 'var')
         disp("using warm start template");
         if MODE == 'r', load('runN35_kc275015.mat');
-        else, load('hopN35v2.mat'); end
+        else, load('hopN35_kc2001.mat'); end
     end
     w0 = w_star;
 else
@@ -71,7 +71,7 @@ options = optimoptions("fmincon", "Display", "iter",...
 w_star = fmincon(cost, w0, A, b, Aeq, beq, lb, ub,...
     @(w) trajConstraints(w, MODE), options);
 
-if MODE=='r', color='r'; else, color='b'; end
+if MODE=='r', color='r'; else, color='g'; end
 plotTraj(w_star, color, MODE);
 
 %% printing information

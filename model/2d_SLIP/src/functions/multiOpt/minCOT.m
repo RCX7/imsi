@@ -35,10 +35,10 @@ function [COT, stanceCost, flightCost, tstance, tflight, w_star] =...
     
     % get constants
     [N, n_states] = simConstants();
-    if mode == 'h'
-        I = I * 2;
-        % target_freq = target_freq * 2;
-    end
+    % if mode == 'h'
+    %     I = I * 2.5;
+    %     % target_freq = target_freq * 2;
+    % end
     
     % cost function and constraints
     cost = @(w) costFun(w, mode, I);     % for energy minimzation
@@ -60,13 +60,15 @@ function [COT, stanceCost, flightCost, tstance, tflight, w_star] =...
     % decision vector (inital guess)
     if init_guess == 0
         disp("using warm start template");
-        if target_speed < 4.5
-            if mode == 'r', load('warmStartTemplates/runN35_kc275015_slow.mat');
-            else, load('warmStartTemplates/hopN35_kc2001_slow.mat'); end
-        else
-            if mode == 'r', load('warmStartTemplates/runN35_kc275015_fast.mat');
-            else, load('warmStartTemplates/hopN35_kc2001_fast.mat'); end
-        end
+        if mode == 'r', load('warmStartTemplates/runN35_kc275015.mat');
+        else, load('warmStartTemplates/hopN35_kc2001.mat'); end
+        % if target_speed < 4.5
+        %     if mode == 'r', load('warmStartTemplates/runN35_kc275015_slow.mat');
+        %     else, load('warmStartTemplates/hopN35_kc2001_slow.mat'); end
+        % else
+        %     if mode == 'r', load('warmStartTemplates/runN35_kc275015_fast.mat');
+        %     else, load('warmStartTemplates/hopN35_kc2001_fast.mat'); end
+        % end
         w0 = w_star;
     else
         w0 = init_guess;

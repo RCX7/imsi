@@ -25,26 +25,30 @@ if gait == 'r', curr_trial = trials{2}; else, curr_trial = trials{1}; end
 mse_npoints = 50;
 
 [num_mdl_pts, ~] = simConstants();
-[~, ~, ~, ~, ~, ~, target_speed, target_freq, I, t_sim, l_uN] =...
+[~, ~, ~, ~, ~, ~, target_speed, target_freq, inertia, t_sim, l_uN] =...
     physConstants(gait);
 
 if unc_freq
     target_freq = 0;
 end
 
+% define variables
 switch gait
     case 'r'
         % ks = 40:2.5:70; for constrained version
-        ks = 15:2.5:50;
+        ks = 17.5:2.5:50;
     case 'h'
-        ks = 10:2.5:60;
+        ks = 15:2.5:40;
 end
+Is = linspace(0.5*inertia, 2*inertia, 12);
+%cs = 0.1:0.05:0.6;
 
-cs = 0.1:0.05:0.6;
-
-[k_mesh, c_mesh] = meshgrid(ks, cs);
+% [k_mesh, c_mesh, I_mesh] = meshgrid(ks, cs, Is);
+[k_mesh, I_mesh] = meshgrid(ks, Is);
 k_vec = k_mesh(:);
-c_vec = c_mesh(:);
+%c_vec = c_mesh(:);
+c = 0.15;  % 0.1 was pretty dang good
+I_vec = I_mesh(:);
 
 
 load("avgForceCurves/" + curr_trial + "_ftotal_curve", ...
@@ -59,13 +63,14 @@ rmpath(singleOpt_path);
 n_sims = numel(k_vec);
 mse_landscape = zeros(n_sims, 1);
 
-%% parallelize optimizations
+% parallelize optimizations
 addpath(multiOpt_path);
 parfor i=1:n_sims
 % for j=1:6
-%     i = j * 15;
+%     i = j * 28;
     k = k_vec(i);
-    c = c_vec(i);
+    %c = c_vec(i);  set to constant value
+    I = I_vec(i);
     
     [~, ~, ~, ~, ~, w_star] = ...
                 robustMinCOT(gait, target_speed, target_freq, k, c, I, 0);
@@ -81,7 +86,7 @@ parfor i=1:n_sims
         mse_landscape(i) = mse;
     end
     % subplot(2, 3, j);
-    % title("Index: " + i + " k: " + k + " c: " + c + " mse: " + mse);
+    % title("Index: " + i + " k: " + k + " c: " + c  + " I: " + I + " mse: " + mse);
     % hold on;
     % plot(t_plot, mdl_forces);
     % plot(t_plot, exp_forces);
@@ -92,19 +97,22 @@ end
 
 mse_landscape = reshape(mse_landscape, size(k_mesh));
 mse_landscape(mse_landscape == 0) = max(mse_landscape, [], "all");
-surf(ks, cs, mse_landscape);
+surf(ks, Is, mse_landscape);
 
-% extract and plot best fit
-[best_c_idx, best_k_idx] = find(mse_landscape == min(mse_landscape, [],"all"));
+%extract and plot best fit
+% [best_c_idx, best_k_idx, best_I_idx] = find(mse_landscape == min(mse_landscape, [],"all"));
+[best_I_idx, best_k_idx] = find(mse_landscape == min(mse_landscape, [],"all"));
 best_k = ks(best_k_idx);
-best_c = cs(best_c_idx);
+% best_c = cs(best_c_idx);
+best_c = c;
+best_I = Is(best_I_idx);
 best_k_norm = best_k / l_uN;
-best_c_norm = best_c / sqrt(l_uN);
+% best_c_norm = best_c / sqrt(l_uN);
 
-fprintf("Best fitting values of k, c: %.2f, %.2f \n", best_k, best_c);
+fprintf("Best fitting values of k, I: %.2f, %.2f \n", best_k, best_I);
 
 
-[~, ~, ~, ~, ~, w_star] = robustMinCOT(gait, target_speed, target_freq, best_k, best_c, I, 0);
+[~, ~, ~, ~, ~, w_star] = robustMinCOT(gait, target_speed, target_freq, best_k, best_c, best_I, 0);
 [t_plot, mdl_forces, exp_forces] = norm_and_plot_mdl_vs_exp( ...
                         w_star, average_stride_ftotal, ...
                         best_k, best_c, t_sim, tstride_avg, ...
