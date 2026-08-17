@@ -20,7 +20,7 @@ preserveVars = true;
 A = []; b = []; Aeq = []; beq = [];
 
 % get constants
-MODE = 'h'; % r for running, h for hopping
+MODE = 'r'; % r for running, h for hopping
 
 [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN] =...
     physConstants(MODE);
@@ -50,19 +50,28 @@ if warmStart
     if ~exist('w_star', 'var')
         disp("using warm start template");
         if MODE == 'r', load('runN35_kc275015.mat');
-        else, load('hopN35_kc2001.mat'); end
+        else, load('hopN35v3.mat'); end
+    end
+    
+    if numel(w_star) ~= ((n_states + 2) * N + 2)  % scale to different number of points
+        [u, states, addDec] = decToMats(w_star, 35);
+        u = interp1(1:35, u, linspace(1, 35, N));
+        states = interp1(1:35, states', linspace(1, 35, N))';
+        new_addDecs = [addDec(1) addDec(2) zeros(1, N)];
+        new_addDec(3:N+2) = interp1(1:35, addDec(3:end), linspace(1, 35, N));
+        w_star = matToDec(u, states, new_addDec);
     end
     w0 = w_star;
-else
+else  % manual initialization
     u = zeros(N, 1);
-    states = zeros(n_states, N) + 0.1;
-    % states(1,:) = linspace(-0.015, 0.025, N);
+    % states = zeros(n_states, N) + 0.1;
+    states(1,:) = linspace(-0.015, 0.025, N);
     states(1,:) = 0;
     states(2,:) = 1;
     % states(3,:) = [linspace(1, 0.5, N/2), linspace(0.5, 1, N/2 + 1)];
     states(4, :) = -1;
     states(5,:) = 0.1;    
-    addDecs = [0.5; 0.1; zeros(N, 1) + 0.2];  % ts, tf, power (abs, N terms)
+    addDecs = [0.05; 0.0; zeros(N, 1) + 0.1];  % ts, tf, power (abs, N terms)
     w0 = matToDec(u, states, addDecs);
 end
 

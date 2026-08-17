@@ -22,10 +22,10 @@ function [COT, stanceCost, flightCost, tstance, tflight, next_guess] =...
 
     counter = 0;
     while isNotExpected(COT, (0.3424 * (tstance + tflight)))
-        if counter <= 2  % ADJUST AS NEEDED
+        if counter <= 3  % ADJUST AS NEEDED
             [COT, stanceCost, flightCost, tstance, tflight, next_guess] =...
                 minCOT(mode, target_speed, target_freq, k, c, I, next_guess);
-        elseif counter <= 3
+        elseif counter <= 5
             [COT, stanceCost, flightCost, tstance, tflight, next_guess] =...
                 minCOT(mode, target_speed, target_freq, k, c, I, 0);
         else

@@ -1,0 +1,7 @@
+for sims:
+I_run = 0.019
+I_hop = 0.038
+
+best fitting parameters:
+running: 27.5, 0.1
+hopping: 20, 0.15

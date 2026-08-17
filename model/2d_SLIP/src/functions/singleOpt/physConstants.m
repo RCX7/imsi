@@ -35,19 +35,17 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     target_speed = target_speed_uN / v_scale; 
     target_freq  = target_freq_uN * t_sim;    
     % I = 0.0463;             % Dimensionless inertia I*
-    % I = 0.019;                % recomputed leg inertia cost (considering leg bend)
-    I = 0.03;
+    I = 0.019;              % recomputed leg inertia cost (considering leg bend)
 
     if mode == 'r'
         % unconstrained
-        k = 27.5; c = 0.15;
+        k = 27.5; c = 0.1;
         % constrained
         % k = 22.5; c = 0.1;
     elseif mode == 'h'
         % unconstrained
-        k = 20; c = 0.2;
-        % constrained
-        % k = 42.5; c = 0.2;
-        I = I * 2.5;  % arbitrary estimation of added leg cost to hopping - knee tuck??
+        k = 20; c = 0.15;
+        % k = 25; c= 0.3;
+        I = I * 2;  % arbitrary estimation of added leg cost to hopping - knee tuck??
     end
 end
