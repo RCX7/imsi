@@ -17,7 +17,9 @@ addpath(shared_func_path);
 addpath(singleOpt_path);
 addpath(warmStartTemp_path);
 %% settings and testing conditions
-gait = 'h';
+subject = "S05";
+m = 91.35; g = 9.81;  % MAKE SURE TO: adjust mass
+gait = 'r';
 unc_freq = true;
 % trials = {'hop_1ms_4min'; 'run_1ms_4min'};
 trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
@@ -38,10 +40,10 @@ switch gait
         % ks = 40:2.5:70; for constrained version
         ks = 17.5:2.5:50;
     case 'h'
-        ks = 15:2.5:40;
+        ks = 15:2.5:30;
 end
 Is = linspace(0.5*inertia, 2*inertia, 12);
-cs = 0.1:0.05:0.4;
+cs = 0.1:0.05:0.6;
 
 first_var = ks;
 second_var = cs;
@@ -50,9 +52,8 @@ second_var = cs;
 firstvar_vec = firstvar_mesh(:);
 secondvar_vec = secondvar_mesh(:);
 
-load("avgForceCurves/" + curr_trial + "_ftotal_curve", ...
+load("avgForceCurves/" + subject + "/" + subject + "_" + curr_trial + "_ftotal_curve", ...
     "average_stride_ftotal", "tstride_avg");  % called "average_stride_ftotal"
-m = 92.65; g = 9.81;
 average_stride_ftotal = average_stride_ftotal / (m * g);
 num_exp_pts = numel(average_stride_ftotal);
 
@@ -69,7 +70,8 @@ addpath(multiOpt_path);
 % saveProfile(cluster); 
 % parpool(24);
 % define unswept variables -- adjust this --
-I = 0.038;
+% I = 0.038;
+I = 0.19;
 parfor i=1:n_sims
 % for j=1:6
 %     i = j * 28;
@@ -101,7 +103,7 @@ end
 
 mse_landscape = reshape(mse_landscape, size(firstvar_mesh));
 mse_landscape(mse_landscape == 0) = max(mse_landscape, [], "all");
-mse_landscape(mse_landscape > 1) = 1;
+% mse_landscape(mse_landscape > 1) = 1;
 surf(ks, cs, mse_landscape);
 
 %extract and plot best fit

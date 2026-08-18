@@ -12,7 +12,7 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     g_uN = 9.81;        % m/s^2
     % m_uN = 80;          % kg (example body mass)
     l_uN = 1.15;        % m (unnormalized leg length)
-    % l_uN = 1;
+    % l_uN = 0.8;
     
     % Derived unit scales
     t_sim = sqrt(l_uN / g_uN);              % Time scale (seconds)
@@ -40,13 +40,15 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
 
     if mode == 'r'
         % unconstrained
-        k = 27.5; c = 0.1;
+        % k = 27.5; c = 0.1;
         % constrained
         % k = 22.5; c = 0.1;
+        k = 25; c = 0.5;   % refit 20260818
     elseif mode == 'h'
         % unconstrained
-        k = 20; c = 0.15;
+        % k = 20; c = 0.15;
         % k = 25; c= 0.3;
+        k = 20; c = 0.45;   % refit 20260818
         I = I * 2;  % arbitrary estimation of added leg cost to hopping - knee tuck??
     end
 end
