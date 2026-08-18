@@ -1,2 +1,2 @@
 time between each datapoint: 5e-4 seconds
-body mass: 92.65 kg
+body mass: 91.35 kg

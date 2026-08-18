@@ -1,0 +1,2 @@
+time between points: 5e-4 seconds
+BW:59.12 kg
