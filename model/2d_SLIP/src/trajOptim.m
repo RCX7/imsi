@@ -11,9 +11,9 @@ warmStart = true;
 
 clc; %close all;
 if warmStart
-    clearvars -except w_star warmStart;
+    clearvars -except w_star warmStart subjectData;
 else
-    clearvars -except warmStart;
+    clearvars -except warmStart subjectData;
 end
 
 preserveVars = true;
@@ -80,7 +80,7 @@ options = optimoptions("fmincon", "Display", "iter",...
 w_star = fmincon(cost, w0, A, b, Aeq, beq, lb, ub,...
     @(w) trajConstraints(w, MODE), options);
 
-if MODE=='r', color='r'; else, color='g'; end
+if MODE=='r', color='r'; else, color='b'; end
 plotTraj(w_star, color, MODE);
 
 %% printing information

@@ -35,7 +35,8 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     target_speed = target_speed_uN / v_scale; 
     target_freq  = target_freq_uN * t_sim;    
     % I = 0.0463;             % Dimensionless inertia I*
-    I = 0.019;              % recomputed leg inertia cost (considering leg bend)
+    % I = 0.019;              % recomputed leg inertia cost (considering leg bend)
+    I = 0.019;
 
     if mode == 'r'
         % unconstrained

@@ -44,7 +44,7 @@ function [] = plotTraj(w, color, mode)
     subplot(2, 2, 3) 
     forces = computeForces(states, control, mode);
     forces = forces / (m * g);
-    total_impulse = trapz(addDecs(1) / (numel(forces) - 1), forces);
+    total_impulse = trapz(((addDecs(1) * t_sim) / (numel(forces) - 1)), forces);
     hold on;
     plot(linspace(0, addDecs(1) * t_sim, N), forces, (color + "o-"));
     xlim padded;
