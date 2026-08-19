@@ -19,7 +19,7 @@ addpath(warmStartTemp_path);
 %% settings and testing conditions
 subject = "S05";
 m = 91.35; g = 9.81;  % MAKE SURE TO: adjust mass
-gait = 'r';
+gait = 'h';
 unc_freq = true;
 % trials = {'hop_1ms_4min'; 'run_1ms_4min'};
 trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
@@ -70,8 +70,8 @@ addpath(multiOpt_path);
 % saveProfile(cluster); 
 % parpool(24);
 % define unswept variables -- adjust this --
-% I = 0.038;
-I = 0.19;
+if gait == 'r', I = 0.019; else I = 0.038; end
+
 parfor i=1:n_sims
 % for j=1:6
 %     i = j * 28;
@@ -104,6 +104,7 @@ end
 mse_landscape = reshape(mse_landscape, size(firstvar_mesh));
 mse_landscape(mse_landscape == 0) = max(mse_landscape, [], "all");
 % mse_landscape(mse_landscape > 1) = 1;
+figure;
 surf(ks, cs, mse_landscape);
 
 %extract and plot best fit

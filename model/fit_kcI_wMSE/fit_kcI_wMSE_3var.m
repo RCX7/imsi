@@ -17,12 +17,12 @@ addpath(shared_func_path);
 addpath(singleOpt_path);
 addpath(warmStartTemp_path);
 %% settings and testing conditions
-subject = "S05";
-m = 91.35; g = 9.81;
-gait = 'r';
+subject = "S06";
+m = 59.12; g = 9.81;
+gait = 'h';
 unc_freq = true;
 % trials = {'hop_1ms_4min'; 'run_1ms_4min'};
-trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
+trials = {'hop_1ms_unc_1min'; 'run_1ms_unc_1min'};
 if gait == 'r', curr_trial = trials{2}; else, curr_trial = trials{1}; end
 mse_npoints = 50;
 
@@ -106,7 +106,7 @@ for i=1:num_subplots
     figure;
     % subplot(num_rows, num_cols, i);
     surf(ks, cs, curr_slice);
-    title('MSE Landscape Slice for I = ' + curr_I);
+    title(sprintf('MSE Landscape Slice for I = %.5f', curr_I));
     xlabel('Spring Constant (k)');
     ylabel('Damping Constant (c)');
     zlabel('Mean Squared Error (MSE)');

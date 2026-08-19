@@ -72,11 +72,11 @@ plt_speeds = speeds * (l_uN / t_sim);
 figure;
 subplot(1, 2, 1);
 hold on;
-plot(plt_speeds, runCOTs / 100, "r-", "LineWidth", 3);
+plot(plt_speeds, runCOTs / 1000, "r-", "LineWidth", 3);
 plot(plt_speeds, run_stance_costs, "r--");
 plot(plt_speeds, run_flight_costs, "r:");
 
-plot(plt_speeds, hopCOTs / 100, "b-", "LineWidth", 3);
+plot(plt_speeds, hopCOTs / 1000, "b-", "LineWidth", 3);
 plot(plt_speeds, hop_stance_costs, "b--");
 plot(plt_speeds, hop_flight_costs, "b:");
 
