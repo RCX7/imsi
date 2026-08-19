@@ -20,7 +20,7 @@ preserveVars = true;
 A = []; b = []; Aeq = []; beq = [];
 
 % get constants
-MODE = 'r'; % r for running, h for hopping
+MODE = 'h'; % r for running, h for hopping
 
 [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN] =...
     physConstants(MODE);

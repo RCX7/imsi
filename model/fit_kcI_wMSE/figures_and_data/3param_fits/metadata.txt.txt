@@ -1,0 +1,9 @@
+single best unconstrained hop fit:
+k: 20
+c: 0.05 [0.025 : 0.025 : 0.25]
+I: 0.012
+
+single best unconstrained run fit:
+k: 25
+c: 0.225
+I: 0.12

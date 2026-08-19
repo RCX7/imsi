@@ -17,6 +17,8 @@ addpath(shared_func_path);
 addpath(singleOpt_path);
 addpath(warmStartTemp_path);
 %% settings and testing conditions
+subject = "S05";
+m = 91.35; g = 9.81;
 gait = 'r';
 unc_freq = true;
 % trials = {'hop_1ms_4min'; 'run_1ms_4min'};
@@ -36,12 +38,14 @@ end
 switch gait
     case 'r'
         % ks = 40:2.5:70; for constrained version
-        ks = 17.5:2.5:50;
+        ks = 10:2.5:30;
+        Is = 1e-3:1e-3:0.02;
     case 'h'
-        ks = 15:2.5:40;
+        ks = 15:2.5:30;
+        Is = 2e-3:2e-3:0.04;
 end
-Is = linspace(0.5*inertia, 2*inertia, 12);
-cs = 0.1:0.05:0.3;
+
+cs = 0.025:0.025:0.25;
 
 [k_mesh, c_mesh, I_mesh] = meshgrid(ks, cs, Is);
 k_vec = k_mesh(:);
@@ -49,9 +53,8 @@ c_vec = c_mesh(:);
 I_vec = I_mesh(:);
 
 
-load("avgForceCurves/" + curr_trial + "_ftotal_curve", ...
+load("avgForceCurves/" + subject + "/" + subject + "_" + curr_trial + "_ftotal_curve", ...
     "average_stride_ftotal", "tstride_avg");  % called "average_stride_ftotal"
-m = 92.65; g = 9.81;
 average_stride_ftotal = average_stride_ftotal / (m * g);
 num_exp_pts = numel(average_stride_ftotal);
 
@@ -63,10 +66,10 @@ mse_landscape = zeros(n_sims, 1);
 
 % parallelize optimizations
 addpath(multiOpt_path);
-cluster = parcluster('local'); 
-cluster.NumWorkers = 24; 
-saveProfile(cluster); 
-parpool(24); 
+% cluster = parcluster('local'); 
+% cluster.NumWorkers = 24; 
+% saveProfile(cluster); 
+% parpool(24); 
 parfor i=1:n_sims
     k = k_vec(i);
     c = c_vec(i);
@@ -87,11 +90,31 @@ parfor i=1:n_sims
     end
 end
 
+%% reshape landscape and plot slices
 mse_landscape = reshape(mse_landscape, size(k_mesh));
 mse_landscape(mse_landscape == 0) = max(mse_landscape, [], "all");
 mse_landscape(mse_landscape > 1) = 1;
 
-%extract and plot best fit
+num_subplots = numel(Is);
+% num_cols = 4;
+% num_rows = ceil(num_subplots / num_cols);
+
+for i=1:num_subplots
+    curr_slice = mse_landscape(:,:,i);
+    curr_I = Is(i);
+    
+    figure;
+    % subplot(num_rows, num_cols, i);
+    surf(ks, cs, curr_slice);
+    title('MSE Landscape Slice for I = ' + curr_I);
+    xlabel('Spring Constant (k)');
+    ylabel('Damping Constant (c)');
+    zlabel('Mean Squared Error (MSE)');
+end
+
+
+
+%% extract and plot best fit
 linear_idx = find(mse_landscape == min(mse_landscape, [], "all"));
 [best_c_idx, best_k_idx, best_I_idx] = ind2sub(size(mse_landscape), linear_idx);
 best_k = ks(best_k_idx);
@@ -107,7 +130,7 @@ fprintf("Best fitting values of k, I: %.2f, %.2f \n", best_k, best_I);
                         best_k, best_c, t_sim, tstride_avg, ...
                         num_mdl_pts, num_exp_pts, mse_npoints ...
                     );
-% some code duplication here ... to be fixed
+
 figure;
 title("Best fitting plot");
 hold on;

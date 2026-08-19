@@ -12,7 +12,7 @@ function mse = fcurve_mse(pred, act)
     % DAMPING!
     N = numel(pred);
     weights = ones(1, N);
-    weights(round(0.92 * N):end) = 3; % triple the weight at the tail
+    weights(round(0.9 * N):end) = 3; % triple the weight at the tail
 
     %% compare each datapoint to compute a MSE
     mse = mean(((pred - act) .* weights).^2);
