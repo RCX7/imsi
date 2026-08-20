@@ -1,7 +1,7 @@
 % physCconstants.m
 % Roger Chen
 % 2026-06-30
-% Modularizing commonly used physicaal constants. Used in determining the
+% Modularizing commonly used physical constants. Used in determining the
 % kinematics of the simulation
 
 function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]...
@@ -12,7 +12,7 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     g_uN = 9.81;        % m/s^2
     % m_uN = 80;          % kg (example body mass)
     % l_uN = 1.15;        % m (unnormalized leg length)
-    l_uN = 0.8;
+    l_uN = 0.85;          % unnormalized leg length for S06
     
     % Derived unit scales
     t_sim = sqrt(l_uN / g_uN);              % Time scale (seconds)
@@ -46,6 +46,7 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
         % three parameter fits
         % k = 25; c = 0.2250; I = 0.0110;   % S05
         k = 17.5; c = 0.05; I = 0.012;     % S06
+        % k = 20; c = 0.05; I = 0.012;     % S06 - experimenting with k
     elseif mode == 'h'
         % unconstrained
         % k = 20; c = 0.15;
