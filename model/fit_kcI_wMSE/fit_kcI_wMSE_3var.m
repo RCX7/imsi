@@ -55,7 +55,7 @@ I_vec = I_mesh(:);
 
 load("avgForceCurves/" + subject + "/" + subject + "_" + curr_trial + "_ftotal_curve", ...
     "average_stride_ftotal", "tstride_avg");  % called "average_stride_ftotal"
-average_stride_ftotal = average_stride_ftotal / (m * g);
+average_stride_ftotal = average_stride_ftotal / (m * g);  % scale by BW
 num_exp_pts = numel(average_stride_ftotal);
 
 rmpath(singleOpt_path);

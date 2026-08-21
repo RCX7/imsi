@@ -6,16 +6,18 @@
 
 clc; clearvars; close all;
 
+subject = "S05";
 save_result = false;
-DATAPATH = 'C:\Users\roger\imsi\exp_data\S01Data\ForceData';
+DATAPATH = "C:\Users\roger\imsi\exp_data\" + subject + "Data_unc\ForceData";
 disp("Data source: " + DATAPATH);
 addpath(DATAPATH);
 
 %% settings
 gait='r';
-trials = {'hop_1ms_4min'; 'run_1ms_4min'};
+% trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
+trials = {'hop_2ms'; 'run_2ms'};
 if gait == 'r', curr_trial = trials{2}; else, curr_trial = trials{1}; end
-m = 92.65;      % body mass
+% m = 91.35;      % body mass
 g = 9.81;       % gravity
 fs = 2000;      % sampling frequency
 tsamp = 1 / fs; % sampling period
@@ -24,29 +26,36 @@ tsamp = 1 / fs; % sampling period
 force_data = importdata([curr_trial '.mot']);  % for loading from S01
 switch gait
     case 'r'
-        bounds_mask = 100:19000;     % needs to be manually tuned.
+        bounds_mask = 1:19520;     % needs to be manually tuned.
     case 'h'
-        bounds_mask = 300:19500;
+        % bounds_mask = 600:19120;
+        bounds_mask = 0:19500;
 end
 
-t = force_data.data(:,1);
-t = t(bounds_mask);
-t_total = t(end) - t(1);
+
 
 F_left = force_data.data(:, [2, 4, 3]);
 F_right = force_data.data(:, [11, 13, 12]);
-F_left = F_left(bounds_mask, :); F_right = F_right(bounds_mask, :);
 switch gait
     case 'r'
         F_net = F_right;
     case 'h'
         F_net = F_right + F_left;
 end
+Fz_net = F_net(:, 3);         % focus on this for splitting arrays
+
+lb = find(Fz_net <= 0, 1, 'first');
+ub = find(Fz_net <= 0, 1, 'last');
+bounds_mask = lb:ub;
+
+F_left = F_left(bounds_mask, :); F_right = F_right(bounds_mask, :);
+
+t = force_data.data(:,1);
+t = t(bounds_mask);
+t_total = t(end) - t(1);
 
 
 %% find stride times
-Fz_net = F_net(:, 3);         % focus on this for splitting arrays
-
 % Fy_net = F_net(:, 2);
 Ftotal_net = vecnorm(F_net, 2, 2);
 
