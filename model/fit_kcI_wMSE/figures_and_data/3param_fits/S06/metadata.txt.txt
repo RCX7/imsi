@@ -7,3 +7,27 @@ single best unconstrained run fit:
 k: 25
 c: 0.225
 I: 0.011
+
+--- AFTER MODIFYING COST FUNCTION TO MATCH PEAK (V2) ---
+
+single best unconstrained hop fit:
+k: 22.5
+c: 0.075
+I: 0.022
+
+single best unconstrained run fit:
+k: 12.5
+c: 0.05
+I: 0.009
+
+--- AFTER MODIFYING COST TO CONSIDER ANGLE OF ATTACK (V4) ---
+
+single best unconstrained hop fit:
+k: 25
+c: 0.025
+I: 0.03
+
+single best unconstrained run fit:
+k: 
+c: 
+I: 

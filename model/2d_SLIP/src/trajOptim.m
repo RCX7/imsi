@@ -80,7 +80,7 @@ options = optimoptions("fmincon", "Display", "iter",...
 w_star = fmincon(cost, w0, A, b, Aeq, beq, lb, ub,...
     @(w) trajConstraints(w, MODE), options);
 
-if MODE=='r', color='r'; else, color='b'; end
+if MODE=='r', color='r'; else, color='g'; end
 plotTraj(w_star, color, MODE);
 
 %% printing information

@@ -17,12 +17,12 @@ addpath(shared_func_path);
 addpath(singleOpt_path);
 addpath(warmStartTemp_path);
 %% settings and testing conditions
-subject = "S05";
-m = 91.35; g = 9.81;  % MAKE SURE TO: adjust mass
-gait = 'h';
+subject = "S06";
+m = 59.12; g = 9.81;  % MAKE SURE TO: adjust mass
+gait = 'r';
 unc_freq = true;
 % trials = {'hop_1ms_4min'; 'run_1ms_4min'};
-trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
+trials = {'hop_1ms_unc_1min'; 'run_1ms_unc_1min'};
 if gait == 'r', curr_trial = trials{2}; else, curr_trial = trials{1}; end
 mse_npoints = 50;
 
@@ -38,12 +38,12 @@ end
 switch gait
     case 'r'
         % ks = 40:2.5:70; for constrained version
-        ks = 17.5:2.5:50;
+        ks = 15:2.5:35;
     case 'h'
-        ks = 15:2.5:30;
+        ks = 10:2.5:35;
 end
 Is = linspace(0.5*inertia, 2*inertia, 12);
-cs = 0.1:0.05:0.6;
+cs = 0.025:0.025:0.6;
 
 first_var = ks;
 second_var = cs;
@@ -69,8 +69,8 @@ addpath(multiOpt_path);
 % cluster.NumWorkers = 24; % on desktop workstation
 % saveProfile(cluster); 
 % parpool(24);
-% define unswept variables -- adjust this --
-if gait == 'r', I = 0.019; else I = 0.038; end
+%% define unswept variables -- adjust this --
+if gait == 'r', I = 0.04; else I = 0.08; end
 
 parfor i=1:n_sims
 % for j=1:6
@@ -103,7 +103,7 @@ end
 
 mse_landscape = reshape(mse_landscape, size(firstvar_mesh));
 mse_landscape(mse_landscape == 0) = max(mse_landscape, [], "all");
-% mse_landscape(mse_landscape > 1) = 1;
+mse_landscape(mse_landscape > 2) = 2;
 figure;
 surf(ks, cs, mse_landscape);
 
@@ -117,7 +117,7 @@ best_k = best_firstvar;
 best_c = best_secondvar;
 best_I = I ;
 
-fprintf("Best fitting values of k, I: %.2f, %.2f \n", best_firstvar, best_I);
+fprintf("Best fitting values of k, c: %.2f, %.2f \n", best_firstvar, best_c);
 
 
 [~, ~, ~, ~, ~, w_star] = robustMinCOT(gait, target_speed, target_freq, best_k, best_c, best_I, 0);

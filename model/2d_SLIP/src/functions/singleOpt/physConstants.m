@@ -11,8 +11,8 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     %% UNNORMALIZED (PHYSICAL) BASE SCALES
     g_uN = 9.81;        % m/s^2
     % m_uN = 80;          % kg (example body mass)
-    l_uN = 1.15;        % m (unnormalized leg length)
-    % l_uN = 0.85;          % unnormalized leg length for S06
+    % l_uN = 1.15;        % m (unnormalized leg length)
+    l_uN = 0.85;          % unnormalized leg length for S06
     
     % Derived unit scales
     t_sim = sqrt(l_uN / g_uN);              % Time scale (seconds)
@@ -22,7 +22,7 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     % I_scale = m_uN * (l_uN^2);            % Inertia scale (kg*m^2)
 
     %% UNNORMALIZED TARGET INPUTS
-    target_speed_uN = 2;                % m/s
+    target_speed_uN = 1;                % m/s
     target_freq_uN  = 0;                % Hz
     if mode == 'r', target_freq_uN = target_freq_uN * 2; end
     
@@ -36,25 +36,31 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     target_freq  = target_freq_uN * t_sim;    
     % I = 0.0463;             % Dimensionless inertia I*
     % I = 0.019;              % recomputed leg inertia cost (considering leg bend)
-    % I = 0.019;
+    I = 0.055;
     % I = 0.011;
 
     if mode == 'r'
-        % unconstrained
-        % k = 27.5; c = 0.1;
+        % two parameter fits
+        % k = 20; c = 0.2;   % FOR S05, I = 0.06
+        k = 17.50; c = 0.1;  % FOR S06, I = 0.06
 
         % three parameter fits
         % k = 25; c = 0.05; I = 0.06;
-        k = 25; c = 0.2250; I = 0.0110;   % S05
-        % k = 17.5; c = 0.05; I = 0.012;     % S06
+        % k = 25; c = 0.2250; I = 0.0110;   % S05
+        % k = 12.5; c = 0.05; I = 0.009;     % S06 - seems to work with cost sweeps... but gait predictions are slightly off
         % k = 20; c = 0.05; I = 0.012;     % S06 - experimenting with k
+        % k = 15; c = 0.025; I = 0.01;   % S06 newest cost function
     elseif mode == 'h'
-        % unconstrained
-        % k = 20; c = 0.15;
-        % I = I * 2;  % arbitrary estimation of added leg cost to hopping - knee tuck??
-
-        k = 20; c = 0.05; I = 0.012;
+        % two parameter fits
+        %k = 20; c = 0.15;
+        % k = 12.5; c = 0.35;
+        % k = 15; c = 0.38;    % FOR S05, I = 2.5 * 0.06 = 0.15
+        k = 25; c= 0.15;     % FOR S06, I = 2.5 * 0.06 = 0.15
+        I = 2.5 * I;
+        
+        % three parameter fits
+        % k = 20; c = 0.05; I = 0.012;
         % k = 20; c = 0.225; I = 0.022;   % S05
-        % k = 25; c = 0.05; I = 0.026;     % S06
+        % k = 20; c = 0.025; I = 0.03;     % S06
     end
 end

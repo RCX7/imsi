@@ -23,10 +23,10 @@ function [fAng, vAng, cAng] = getCollAngles(w, k, c)
     
 
     % peak force analysis
-    pk_frc_idx = find(forces == max(forces));
-    disp("=== Peak Force angles: ===");
-    fprintf("Force: %.5f\n", theta_i(pk_frc_idx));
-    fprintf("Velocity: %.5f\n", lambda_i(pk_frc_idx));
-    fprintf("Collision: %.5f\n", phi_i(pk_frc_idx));
-    disp("==========================");
+    % pk_frc_idx = find(forces == max(forces));
+    % disp("=== Peak Force angles: ===");
+    % fprintf("Force: %.5f\n", theta_i(pk_frc_idx));
+    % fprintf("Velocity: %.5f\n", lambda_i(pk_frc_idx));
+    % fprintf("Collision: %.5f\n", phi_i(pk_frc_idx));
+    % disp("==========================");
 end

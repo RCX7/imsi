@@ -19,7 +19,7 @@ addpath(warmStartTemp_path);
 %% settings and testing conditions
 subject = "S06";
 m = 59.12; g = 9.81;
-gait = 'h';
+gait = 'r';
 unc_freq = true;
 % trials = {'hop_1ms_4min'; 'run_1ms_4min'};
 trials = {'hop_1ms_unc_1min'; 'run_1ms_unc_1min'};
@@ -85,7 +85,13 @@ parfor i=1:n_sims
                             );
     
         %% measure MSE and store
-        mse = fcurve_mse(mdl_forces, exp_forces);
+        [mdl_fAng, ~, ~] = getCollAngles(w_star, k, c)
+        % TODO: get experimental force angles - or set somehow
+        exp_fAng = 0.1;
+        % exp_fAng = 0.06;
+
+        % MSE is now more of a hybrid cost
+        mse = 1.5 * abs(mdl_fAng - exp_fAng) + fcurve_mse(mdl_forces, exp_forces);
         mse_landscape(i) = mse;
     end
 end

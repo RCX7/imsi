@@ -18,7 +18,8 @@ addpath('functions/singleOpt');
 [~, ~, k_hop, c_hop, ~, ~, target_speed, target_freq_h, I_hop, t_sim, l_uN] = physConstants('h');
 rmpath('functions/singleOpt');
 
-speeds = linspace(target_speed*(1/3), target_speed*2.5, 16);
+target_speed = 3 / (l_uN / t_sim);  % set to a constant here.
+speeds = linspace(target_speed*(1/3), target_speed*2.5, 8);
 
 %% run cost sweep
 num_speeds = length(speeds);
@@ -72,11 +73,11 @@ plt_speeds = speeds * (l_uN / t_sim);
 figure;
 subplot(1, 2, 1);
 hold on;
-plot(plt_speeds, runCOTs / 1000, "r-", "LineWidth", 3);
+plot(plt_speeds, runCOTs / 100, "r-", "LineWidth", 3);
 plot(plt_speeds, run_stance_costs, "r--");
 plot(plt_speeds, run_flight_costs, "r:");
 
-plot(plt_speeds, hopCOTs / 1000, "b-", "LineWidth", 3);
+plot(plt_speeds, hopCOTs / 100, "b-", "LineWidth", 3);
 plot(plt_speeds, hop_stance_costs, "b--");
 plot(plt_speeds, hop_flight_costs, "b:");
 

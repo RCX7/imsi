@@ -12,8 +12,14 @@ function mse = fcurve_mse(pred, act)
     % DAMPING!
     N = numel(pred);
     weights = ones(1, N);
-    weights(round(0.9 * N):end) = 3; % triple the weight at the tail
+
+    exp_pk_loc = find(act == max(act), 1);
+    mdl_pk_loc = find(pred == max(pred), 1);
+    % weights(pk_loc) = 5; % 10x the weight at the peak
+    % weights(round(0.9 * N):end) = 5; % 5x the weight at the tail
+    % weights = weights / mean(weights); % normalize
 
     %% compare each datapoint to compute a MSE
     mse = mean(((pred - act) .* weights).^2);
+    mse = mse + 0.2 * sqrt((exp_pk_loc - mdl_pk_loc)^2 + (max(act) - max(pred))^2);
 end
