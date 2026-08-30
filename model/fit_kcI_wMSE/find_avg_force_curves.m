@@ -14,8 +14,8 @@ addpath(DATAPATH);
 
 %% settings
 gait='r';
-% trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
-trials = {'hop_2ms'; 'run_2ms'};
+trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
+% trials = {'hop_2ms'; 'run_2ms'};
 if gait == 'r', curr_trial = trials{2}; else, curr_trial = trials{1}; end
 % m = 91.35;      % body mass
 g = 9.81;       % gravity
@@ -24,31 +24,31 @@ tsamp = 1 / fs; % sampling period
 
 %% import and extract the data
 force_data = importdata([curr_trial '.mot']);  % for loading from S01
-switch gait
-    case 'r'
-        bounds_mask = 1:19520;     % needs to be manually tuned.
-    case 'h'
-        % bounds_mask = 600:19120;
-        bounds_mask = 0:19500;
-end
-
-
+% switch gait
+%     case 'r'
+%         bounds_mask = 1:19520;     % needs to be manually tuned.
+%     case 'h'
+%         bounds_mask = 380:19700;
+%         % bounds_mask = 0:19500;
+% end
 
 F_left = force_data.data(:, [2, 4, 3]);
 F_right = force_data.data(:, [11, 13, 12]);
+F_total = F_left + F_right;
+Fz_total = F_total(:,3);
+
+lb = find(Fz_total <= 0, 1, 'first');
+ub = find(Fz_total <= 0, 1, 'last');
+bounds_mask = lb:ub;
+
+F_left = F_left(bounds_mask, :); F_right = F_right(bounds_mask, :);
 switch gait
     case 'r'
         F_net = F_right;
     case 'h'
-        F_net = F_right + F_left;
+        F_net = F_left + F_right;
 end
-Fz_net = F_net(:, 3);         % focus on this for splitting arrays
-
-lb = find(Fz_net <= 0, 1, 'first');
-ub = find(Fz_net <= 0, 1, 'last');
-bounds_mask = lb:ub;
-
-F_left = F_left(bounds_mask, :); F_right = F_right(bounds_mask, :);
+Fz_net = F_net(:,3);
 
 t = force_data.data(:,1);
 t = t(bounds_mask);
@@ -77,7 +77,12 @@ end
 %% find averages and plot strides
 average_stride_fz = mean(fz_strides, 1);
 average_stride_ftotal = mean(ftotal_strides, 1);
-tstride_avg = mean(to_points - td_points) * tsamp;
+tstance = to_points - td_points;
+tstride_avg = mean(tstance) * tsamp;   % misleading name but need to stick iwth it
+
+stride_freq = 1 / (mean(diff(to_points)) * tsamp);
+ttotals = diff(to_points);
+dutyfac = mean(tstance(1:numel(ttotals)) ./ ttotals);
 
 subplot(1, 2, 1);
 title("Vertical forces");

@@ -101,6 +101,7 @@ fprintf("vel: %f\n", vAng);
 fprintf("coll: %f\n", cAng);
 
 dutyFac = getDutyFactor(w_star);
+if MODE == 'h', dutyFac = dutyFac * 2; end
 fprintf("Duty Factor: %.2f\n", dutyFac);
 
 % fprintf("True knorm (adjusted for length): %f\n", k / l_uN);

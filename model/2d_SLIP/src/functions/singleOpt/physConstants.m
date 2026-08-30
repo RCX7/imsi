@@ -11,8 +11,8 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     %% UNNORMALIZED (PHYSICAL) BASE SCALES
     g_uN = 9.81;        % m/s^2
     % m_uN = 80;          % kg (example body mass)
-    % l_uN = 1.15;        % m (unnormalized leg length)
-    l_uN = 0.85;          % unnormalized leg length for S06
+    l_uN = 1.15;        % m (unnormalized leg length)
+    % l_uN = 0.85;          % unnormalized leg length for S06
     
     % Derived unit scales
     t_sim = sqrt(l_uN / g_uN);              % Time scale (seconds)
@@ -22,7 +22,7 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     % I_scale = m_uN * (l_uN^2);            % Inertia scale (kg*m^2)
 
     %% UNNORMALIZED TARGET INPUTS
-    target_speed_uN = 1;                % m/s
+    target_speed_uN = 2;                % m/s
     target_freq_uN  = 0;                % Hz
     if mode == 'r', target_freq_uN = target_freq_uN * 2; end
     
@@ -36,13 +36,19 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     target_freq  = target_freq_uN * t_sim;    
     % I = 0.0463;             % Dimensionless inertia I*
     % I = 0.019;              % recomputed leg inertia cost (considering leg bend)
-    I = 0.055;
+    % I = 0.03;
+    % I = 0.03;
     % I = 0.011;
+    I = 0.06;
 
     if mode == 'r'
+        % arbitrary estimates
+        % k = 20;
+        % c = 0.2;
+
         % two parameter fits
-        % k = 20; c = 0.2;   % FOR S05, I = 0.06
-        k = 17.50; c = 0.1;  % FOR S06, I = 0.06
+        k = 15; c = 0.4;   % FOR S05, I = 0.06
+        % k = 17.50; c = 0.1;  % FOR S06, I = 0.06
 
         % three parameter fits
         % k = 25; c = 0.05; I = 0.06;
@@ -51,12 +57,19 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
         % k = 20; c = 0.05; I = 0.012;     % S06 - experimenting with k
         % k = 15; c = 0.025; I = 0.01;   % S06 newest cost function
     elseif mode == 'h'
+        % return to doubling parameters
+        k = 30;
+        c = 0.8;
+        I = I * 2.25;  % except 2.5x leg inertia
+
+
         % two parameter fits
         %k = 20; c = 0.15;
         % k = 12.5; c = 0.35;
         % k = 15; c = 0.38;    % FOR S05, I = 2.5 * 0.06 = 0.15
-        k = 25; c= 0.15;     % FOR S06, I = 2.5 * 0.06 = 0.15
-        I = 2.5 * I;
+        % k = 35; c = 0.38;
+        % % k = 25; c= 0.15;     % FOR S06, I = 2.5 * 0.06 = 0.15
+        % I = 2.15 * I;
         
         % three parameter fits
         % k = 20; c = 0.05; I = 0.012;
