@@ -21,5 +21,6 @@ function mse = fcurve_mse(pred, act)
 
     %% compare each datapoint to compute a MSE
     mse = mean(((pred - act) .* weights).^2);
-    mse = mse + 0.2 * sqrt((exp_pk_loc - mdl_pk_loc)^2 + (max(act) - max(pred))^2);
+    match_peaks = 0.2 * sqrt((exp_pk_loc - mdl_pk_loc)^2 + (max(act) - max(pred))^2);
+    % mse = mse + match_peaks;
 end

@@ -13,9 +13,9 @@ disp("Data source: " + DATAPATH);
 addpath(DATAPATH);
 
 %% settings
-gait='r';
-trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
-% trials = {'hop_2ms'; 'run_2ms'};
+gait='h';
+% trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
+trials = {'hop_2ms'; 'run_2ms'};
 if gait == 'r', curr_trial = trials{2}; else, curr_trial = trials{1}; end
 % m = 91.35;      % body mass
 g = 9.81;       % gravity
@@ -99,11 +99,11 @@ plot(average_stride_ftotal, "k-", LineWidth=5);
 hold off;
 
 if save_result
-    fz_saveFile = "avgForceCurves\" + curr_trial + "_fz_curve";
+    fz_saveFile = "avgForceCurves\" + subject + "\" + subject + "_" + curr_trial + "_fz_curve";
     save(fz_saveFile, "average_stride_fz", "tstride_avg");
     disp("saved fz data at: " + fz_saveFile);
     
-    ftotal_saveFile = "avgForceCurves\" + curr_trial + "_ftotal_curve";
+    ftotal_saveFile = "avgForceCurves\" + subject + "\" + subject + "_" + curr_trial + "_ftotal_curve";
     save(ftotal_saveFile, "average_stride_ftotal", "tstride_avg");
     disp("saved ftotal data at: " + ftotal_saveFile);
 end

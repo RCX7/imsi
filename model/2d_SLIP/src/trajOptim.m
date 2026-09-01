@@ -81,28 +81,32 @@ w_star = fmincon(cost, w0, A, b, Aeq, beq, lb, ub,...
     @(w) trajConstraints(w, MODE), options);
 
 if MODE=='r', color='r'; else, color='g'; end
+figure;
 plotTraj(w_star, color, MODE);
 
 %% printing information
-disp("Current run SI units (except I and k):");
-fprintf("Frequency: %.2f steps/s\n", ...
-         1 / (((w_star(end-N-1) + w_star(end-N)) * t_sim)) );
-unSpeed = target_speed * (l_uN / t_sim);
-fprintf("Speed: %.2f m/s (%.2f mph)\n", unSpeed, unSpeed * 2.23694)
-fprintf("Leg Inertia: %.3f | k:  %.3f \n", ...
-         I, k);
+[COT, stride_freq, stride_len, stride_duration, dutyfac, peak_force, impulse, fAng, vAng, cAng] ...
+    = getGaitStats(w_star, MODE, true);
 
-disp("COST (" + MODE + "): ");
-disp(cost(w_star));
-[fAng, vAng, cAng] = getCollAngles(w_star, k, c);
-disp("Collision-based analysis angles (rad): ")
-fprintf("force: %f\n", fAng);
-fprintf("vel: %f\n", vAng);
-fprintf("coll: %f\n", cAng);
-
-dutyFac = getDutyFactor(w_star);
-if MODE == 'h', dutyFac = dutyFac * 2; end
-fprintf("Duty Factor: %.2f\n", dutyFac);
+% disp("Current run SI units (except I and k):");
+% fprintf("Frequency: %.2f steps/s\n", ...
+%          1 / (((w_star(end-N-1) + w_star(end-N)) * t_sim)) );
+% unSpeed = target_speed * (l_uN / t_sim);
+% fprintf("Speed: %.2f m/s (%.2f mph)\n", unSpeed, unSpeed * 2.23694)
+% fprintf("Leg Inertia: %.3f | k:  %.3f \n", ...
+%          I, k);
+% 
+% disp("COST (" + MODE + "): ");
+% disp(cost(w_star));
+% [fAng, vAng, cAng] = getCollAngles(w_star, k, c);
+% disp("Collision-based analysis angles (rad): ")
+% fprintf("force: %f\n", fAng);
+% fprintf("vel: %f\n", vAng);
+% fprintf("coll: %f\n", cAng);
+% 
+% dutyFac = getDutyFactor(w_star);
+% if MODE == 'h', dutyFac = dutyFac * 2; end
+% fprintf("Duty Factor: %.2f\n", dutyFac);
 
 % fprintf("True knorm (adjusted for length): %f\n", k / l_uN);
 % fprintf("True cnorm (adjusted for length): %f\n", c / sqrt(l_uN));
