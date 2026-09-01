@@ -21,10 +21,10 @@ function [COT, stride_freq, stride_len, stride_duration, dutyfac, peak_force, im
     [control, states, addDecs] = decToMats(w_star);
     [xs, xdots, zs, zdots, las] = extractStates(states);
     [xf, ~, ~, ~] = flightKinematics(xs(end), xdots(end),...
-        zs(end), zdots(end), 0:0.01:addDecs(2));
+        zs(end), zdots(end), addDecs(2));
 
-    COT = costFunBase(w_star, m, g, I, gait);
-    stride_duration = addDecs(1) * t_sim;
+    COT = costFunBase(w_star, m, g, I, gait) / 100;     % SCALED BY A FACTOR FOR OPTIMZIATION
+    stride_duration = (addDecs(1) + addDecs(2)) * t_sim;
     stride_freq = 1 / (stride_duration);
     stride_len = (xf - xs(1)) * l_uN;
     dutyfac = getDutyFactor(w_star);

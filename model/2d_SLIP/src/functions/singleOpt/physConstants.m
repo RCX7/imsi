@@ -36,10 +36,6 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     target_freq  = target_freq_uN * t_sim;    
     % I = 0.0463;             % Dimensionless inertia I*
     % I = 0.019;              % recomputed leg inertia cost (considering leg bend)
-    % I = 0.03;
-    % I = 0.03;
-    % I = 0.011;
-    % I = 0.01;
 
     if mode == 'r'
         % hop run constrained two parameter fits
@@ -51,6 +47,11 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
         % S05 1ms - not precise
         % k = 15;
         % c = 0.25;
+        % I = 0.01;
+
+        % S06 1ms - probably not precise but don't have 2ms data
+        % k = 20;
+        % c = 0.025;
         % I = 0.01;
 
         % two parameter fits
