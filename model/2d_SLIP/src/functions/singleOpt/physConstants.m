@@ -43,9 +43,15 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
 
     if mode == 'r'
         % hop run constrained two parameter fits
+        % S05 2ms
         k = 20;
         c = 0.1;
         I = 0.01;
+
+        % S05 1ms - not precise
+        % k = 15;
+        % c = 0.25;
+        % I = 0.01;
 
         % two parameter fits
         % k = 15; c = 0.4;   % FOR S05, I = 0.06
@@ -59,6 +65,7 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
         % k = 15; c = 0.025; I = 0.01;   % S06 newest cost function
     elseif mode == 'h'
         % return to doubling parameters
+        % S05 2ms
         k = 40;
         c = 0.2;
         I = 0.02;

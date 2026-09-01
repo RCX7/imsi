@@ -6,7 +6,7 @@
 
 clc; clearvars; close all;
 
-subject = "S05";
+subject = "S06";
 save_result = false;
 DATAPATH = "C:\Users\roger\imsi\exp_data\" + subject + "Data_unc\ForceData";
 disp("Data source: " + DATAPATH);

@@ -8,7 +8,8 @@
 clc; clearvars; %close all;
 
 % mdl_src_path = 'C:\Users\azizi\Downloads\rogerc8_imsi_work\imsi\model\2d_SLIP\src';
-mdl_src_path = 'C:\Users\roger\imsi\model\2d_SLIP\src';
+% mdl_src_path = 'C:\Users\roger\imsi\model\2d_SLIP\src';
+mdl_src_path = 'C:\Users\Public\Documents\Roger\imsi\model\2d_SLIP\src';
 mdl_func_path = fullfile(mdl_src_path, "functions");
 shared_func_path = fullfile(mdl_func_path, "sharedFuncs");
 singleOpt_path = fullfile(mdl_func_path, "singleOpt");
@@ -19,11 +20,11 @@ addpath(shared_func_path);
 addpath(singleOpt_path);
 addpath(warmStartTemp_path);
 %% settings and testing conditions
-subject = "S05";
-m = 91.35; g = 9.81;  % MAKE SURE TO: adjust mass
+subject = "S06";
+m = 59.12; g = 9.81;  % MAKE SURE TO: adjust mass
 
 % trials = {'run_1ms_4min'; 'hop_1ms_4min'};
-% trials = {'run_1ms_unc_1min'; 'hop_1ms_unc_1min'};
+% trials = {'run_1ms_unc_1min'; 'hop_1ms_unc_30sec'};
 trials = {'run_2ms'; 'hop_2ms'};
 
 mse_npoints = 50;
