@@ -22,7 +22,7 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     % I_scale = m_uN * (l_uN^2);            % Inertia scale (kg*m^2)
 
     %% UNNORMALIZED TARGET INPUTS
-    target_speed_uN = 1;                % m/s
+    target_speed_uN = 2;                % m/s
     target_freq_uN  = 0;                % Hz
     if mode == 'r', target_freq_uN = target_freq_uN * 2; end
     
@@ -67,9 +67,14 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     elseif mode == 'h'
         % return to doubling parameters
         % S05 2ms
-        k = 40;
-        c = 0.2;
-        I = 0.02;
+        % k = 40;
+        % c = 0.2;
+        % I = 0.02;
+        
+        % S05 2ms full stride fit
+        k = 47.5;
+        c = 0.15;
+        I = 0.06;
 
         % two parameter fits
         %k = 20; c = 0.15;

@@ -6,18 +6,18 @@
 
 clc; clearvars; close all;
 
-subject = "S06";
+subject = "S05";
 save_result = false;
+
 DATAPATH = "C:\Users\roger\imsi\exp_data\" + subject + "Data_unc\ForceData";
 disp("Data source: " + DATAPATH);
 addpath(DATAPATH);
 
 %% settings
-gait='h';
+gait='r';
 % trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
 trials = {'hop_2ms'; 'run_2ms'};
 if gait == 'r', curr_trial = trials{2}; else, curr_trial = trials{1}; end
-% m = 91.35;      % body mass
 g = 9.81;       % gravity
 fs = 2000;      % sampling frequency
 tsamp = 1 / fs; % sampling period
@@ -77,8 +77,16 @@ end
 %% find averages and plot strides
 average_stride_fz = mean(fz_strides, 1);
 average_stride_ftotal = mean(ftotal_strides, 1);
+
 tstance = to_points - td_points;
-tstride_avg = mean(tstance) * tsamp;   % misleading name but need to stick iwth it
+tstance_avg = mean(tstance) * tsamp; 
+tflight = td_points(2:end) - to_points(1:end-1);
+tflight_avg = mean(tflight) * tsamp;
+
+tstride = diff(to_points);
+tstride_avg = mean(tstride) * tsamp;
+
+if gait == 'r', tstride_avg = tstride_avg / 2; end
 
 stride_freq = 1 / (mean(diff(to_points)) * tsamp);
 ttotals = diff(to_points);
@@ -98,13 +106,15 @@ plot(ftotal_strides');
 plot(average_stride_ftotal, "k-", LineWidth=5);
 hold off;
 
+
+curve_timing = "full_stride";
 if save_result
-    fz_saveFile = "avgForceCurves\" + subject + "\" + subject + "_" + curr_trial + "_fz_curve";
-    save(fz_saveFile, "average_stride_fz", "tstride_avg");
+    fz_saveFile = "avgForceCurves\" + subject + "\" + curve_timing + "\" + subject + "_" + curr_trial + "_fz_curve";
+    save(fz_saveFile, "average_stride_fz", "tstance_avg", "tflight_avg", "tstride_avg");
     disp("saved fz data at: " + fz_saveFile);
     
-    ftotal_saveFile = "avgForceCurves\" + subject + "\" + subject + "_" + curr_trial + "_ftotal_curve";
-    save(ftotal_saveFile, "average_stride_ftotal", "tstride_avg");
+    ftotal_saveFile = "avgForceCurves\" + subject + "\" + curve_timing + "\" + subject + "_" + curr_trial + "_ftotal_curve";
+    save(ftotal_saveFile, "average_stride_ftotal", "tstance_avg", "tflight_avg", "tstride_avg");
     disp("saved ftotal data at: " + ftotal_saveFile);
 end
 
