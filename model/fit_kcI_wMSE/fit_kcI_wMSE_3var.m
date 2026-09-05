@@ -21,7 +21,7 @@ addpath(warmStartTemp_path);
 %% settings and testing conditions
 subject = "S05";
 m = 91.35; g = 9.81;
-gait = 'r';
+gait = 'h';
 unc_freq = true;
 % trials = {'hop_1ms_4min'; 'run_1ms_4min'};
 % trials = {'hop_1ms_unc_1min'; 'run_1ms_unc_1min'};
@@ -42,7 +42,7 @@ switch gait
     case 'r'
         % ks = 40:2.5:70; for constrained version
         ks = 10:2.5:30;
-        Is = 0.005:0.005:0.045;
+        Is = 0.005:0.005:0.06;
     case 'h'
         ks = 20:2.5:50;
         Is = 0.01:0.01:0.09;

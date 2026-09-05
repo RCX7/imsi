@@ -44,6 +44,11 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
         c = 0.1;
         I = 0.01;
 
+        % S05 2ms full stride fit
+        k = 10;
+        c = 0.125;
+        I = 0.045;
+
         % S05 1ms - not precise
         % k = 15;
         % c = 0.25;
