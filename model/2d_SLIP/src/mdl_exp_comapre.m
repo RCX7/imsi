@@ -99,9 +99,9 @@ BW = 59.12;
 trial_speed = target_speed * (l_uN / t_sim);
 load("exp_data/" +subject + "/" + subject + "_results_summary_" + trial_speed + "ms.mat");
 if MODE == 'r'
-    trial_data = subjectData.run_1ms_unc_1min;
+    trial_data = subjectData.run_2ms;
 elseif MODE == 'h'
-    trial_data = subjectData.hop_1ms_unc_30sec;
+    trial_data = subjectData.hop_2ms;
 end
 
 exp_stride_freq = trial_data.General.StrideFrequency;
@@ -109,49 +109,49 @@ exp_dutyfac = trial_data.General.DutyFactor;
 exp_stride_len = trial_data.General.StrideLength;
 exp_peak_force = trial_data.Force.AvgPeakForceFz / (BW * 9.81);
 exp_impulse = trial_data.Force.AvgImpulseFz / (BW * 9.81);
-exp_fAng = trial_data.CollisionAngles.ForceAngle;
-exp_vAng = trial_data.CollisionAngles.VelocityAngle;
-exp_cAng = trial_data.CollisionAngles.CollisionAngle;
-exp_COT = trial_data.CollisionAngles.CoTmech;
+% exp_fAng = trial_data.CollisionAngles.ForceAngle;
+% exp_vAng = trial_data.CollisionAngles.VelocityAngle;
+% exp_cAng = trial_data.CollisionAngles.CollisionAngle;
+% exp_COT = trial_data.CollisionAngles.CoTmech;
 
 % coalesce data
 
 param_labels = [
-    "COT";
+    % "COT";
     "Stride Frequency";
     "Stride Length";
     "Duty Factor";
     "Peak Force";
     "Impulse";
-    "Force Angle";
-    "Velocity Angle";
-    "Collision Angle";
+    % "Force Angle";
+    % "Velocity Angle";
+    % "Collision Angle";
 ];
 
 mdl_params = [
-    mdl_COT;
+    % mdl_COT;
     mdl_stride_freq;
     % mdl_stride_duration;
     mdl_stride_len;
     mdl_dutyfac;
     mdl_peak_force;
     mdl_impulse;
-    mdl_fAng;
-    mdl_vAng;
-    mdl_cAng;
+    % mdl_fAng;
+    % mdl_vAng;
+    % mdl_cAng;
 ];
 
 exp_params = [
-    exp_COT;
+    % exp_COT;
     exp_stride_freq;
     % exp_stride_duration;
     exp_stride_len;
     exp_dutyfac;
     exp_peak_force;
     exp_impulse;
-    exp_fAng;
-    exp_vAng;
-    exp_cAng;
+    % exp_fAng;
+    % exp_vAng;
+    % exp_cAng;
 ];
 
 figure;

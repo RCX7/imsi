@@ -40,14 +40,19 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     if mode == 'r'
         % hop run constrained two parameter fits
         % S05 2ms
-        k = 20;
-        c = 0.1;
-        I = 0.01;
+        % k = 20;
+        % c = 0.01;
+        % I = 0.02;
 
         % S05 2ms full stride fit
-        k = 10;
+        % k = 22.5;
+        % c = 0.125;
+        % I = 0.045;
+
+        % two stride fit
+        k = 22.5;
         c = 0.125;
-        I = 0.045;
+        I = 0.02;
 
         % S05 1ms - not precise
         % k = 15;
@@ -77,9 +82,14 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
         % I = 0.02;
         
         % S05 2ms full stride fit
-        k = 47.5;
-        c = 0.15;
-        I = 0.06;
+        % k = 47.5;
+        % c = 0.15;
+        % I = 0.06;
+        
+        % two stride fit
+        k = 45;
+        c = 0.175;
+        I = 0.02;
 
         % two parameter fits
         %k = 20; c = 0.15;

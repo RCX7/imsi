@@ -7,8 +7,8 @@
 clc; clearvars; %close all;
 
 % mdl_src_path = 'C:\Users\azizi\Downloads\rogerc8_imsi_work\imsi\model\2d_SLIP\src';
-mdl_src_path = 'C:\Users\roger\imsi\model\2d_SLIP\src';
-% mdl_src_path = 'C:\Users\Public\Documents\Roger\imsi\model\2d_SLIP\src';
+% mdl_src_path = 'C:\Users\roger\imsi\model\2d_SLIP\src';
+mdl_src_path = 'C:\Users\Public\Documents\Roger\imsi\model\2d_SLIP\src';
 mdl_func_path = fullfile(mdl_src_path, "functions");
 shared_func_path = fullfile(mdl_func_path, "sharedFuncs");
 singleOpt_path = fullfile(mdl_func_path, "singleOpt");
@@ -27,7 +27,7 @@ unc_freq = true;
 % trials = {'hop_1ms_unc_1min'; 'run_1ms_unc_1min'};
 trials = {'hop_2ms'; 'run_2ms'};
 if gait == 'r', curr_trial = trials{2}; else, curr_trial = trials{1}; end
-mse_npoints = 100;
+mse_npoints = 150;
 
 [num_mdl_pts, ~] = simConstants();
 [~, ~, ~, ~, ~, ~, target_speed, target_freq, ~, t_sim, l_uN] =...
@@ -48,7 +48,7 @@ switch gait
         Is = 0.01:0.01:0.09;
 end
 
-cs = 0.025:0.025:0.15;
+cs = 0.025:0.05:0.5;
 
 [k_mesh, c_mesh, I_mesh] = meshgrid(ks, cs, Is);
 k_vec = k_mesh(:);
@@ -84,10 +84,10 @@ parfor i=1:n_sims
     [~, ~, ~, ~, ~, w_star] = ...
                 robustMinCOT(gait, target_speed, target_freq, k, c, I, 0);
 
-    [control, states, addDecs] = decToMats(w_star);
-    mdl_forces = computeForces(states, control, k, c);
-
     if w_star
+        [control, states, addDecs] = decToMats(w_star);
+        mdl_forces = computeForces(states, control, k, c);
+
         mdl_tstance = addDecs(1) * t_sim;
         mdl_tflight = addDecs(2) * t_sim;
         if gait == 'r'  % to match with experimental force curve, which has another stride in between
@@ -95,7 +95,7 @@ parfor i=1:n_sims
         end
         [~, mdl_forces_itrp, exp_forces] = norm_and_plot_mdl_vs_exp( ...
                                 mdl_forces, average_stride_ftotal, ...
-                                mdl_tstance, mdl_tflight, tstance_avg, tstride_avg, ...
+                                mdl_tstance, mdl_tflight, tstance_avg, tflight_avg, ...
                                 num_mdl_pts, num_exp_pts, mse_npoints ...
                             );
     
@@ -108,7 +108,7 @@ end
 %% reshape landscape and plot slices
 mse_landscape = reshape(mse_landscape, size(k_mesh));
 mse_landscape(mse_landscape == 0) = max(mse_landscape, [], "all");
-mse_landscape(mse_landscape > 2) = 2;
+mse_landscape(mse_landscape > 5) = 5;
 
 num_subplots = numel(Is);
 % num_cols = 4;
@@ -152,7 +152,7 @@ if gait == 'r'
 end
 [t_plot, mdl_forces_itrp, exp_forces] = norm_and_plot_mdl_vs_exp( ...
                                 mdl_forces, average_stride_ftotal, ...
-                                mdl_tstance, mdl_tflight, tstance_avg, tstride_avg, ...
+                                mdl_tstance, mdl_tflight, tstance_avg, tflight_avg, ...
                                 num_mdl_pts, num_exp_pts, mse_npoints ...
                             );
 
