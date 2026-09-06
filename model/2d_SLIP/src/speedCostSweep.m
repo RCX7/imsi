@@ -10,7 +10,6 @@ clearvars; clc; %close all;
 addpath('functions/multiOpt');
 addpath('functions/sharedFuncs');
 addpath('warmStartTemplates');
-addpath('data');
 
 %% set up variables
 addpath('functions/singleOpt');

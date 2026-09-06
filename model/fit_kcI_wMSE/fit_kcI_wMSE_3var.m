@@ -24,8 +24,8 @@ m = 91.35; g = 9.81;
 gait = 'h';
 unc_freq = true;
 % trials = {'hop_1ms_4min'; 'run_1ms_4min'};
-% trials = {'hop_1ms_unc_1min'; 'run_1ms_unc_1min'};
-trials = {'hop_2ms'; 'run_2ms'};
+trials = {'hop_1ms_unc_1min'; 'run_1ms_unc_1min'};
+% trials = {'hop_2ms'; 'run_2ms'};
 if gait == 'r', curr_trial = trials{2}; else, curr_trial = trials{1}; end
 mse_npoints = 150;
 
@@ -44,7 +44,7 @@ switch gait
         ks = 10:2.5:30;
         Is = 0.005:0.005:0.06;
     case 'h'
-        ks = 20:2.5:50;
+        ks = 25:2.5:50;
         Is = 0.01:0.01:0.09;
 end
 
@@ -69,17 +69,14 @@ mse_landscape = zeros(n_sims, 1);
 
 % parallelize optimizations
 addpath(multiOpt_path);
-% cluster = parcluster('local'); 
-% cluster.NumWorkers = 24; 
-% saveProfile(cluster); 
-% parpool(24); 
+cluster = parcluster('local'); 
+cluster.NumWorkers = 24; 
+saveProfile(cluster); 
+parpool(24); 
 parfor i=1:n_sims
     k = k_vec(i);
     c = c_vec(i);
     I = I_vec(i);
-    % k = 35;
-    % c = 0.2;
-    % I = 0.1;
     
     [~, ~, ~, ~, ~, w_star] = ...
                 robustMinCOT(gait, target_speed, target_freq, k, c, I, 0);

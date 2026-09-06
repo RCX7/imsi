@@ -22,7 +22,7 @@ preserveVars = true;
 A = []; b = []; Aeq = []; beq = [];
 
 % get constants
-MODE = 'h'; % r for running, h for hopping
+MODE = 'r'; % r for running, h for hopping
 
 [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN] =...
     physConstants(MODE);
@@ -89,19 +89,26 @@ plotTraj(w_star, color, MODE);
 if MODE == 'r'
     mdl_stride_freq = mdl_stride_freq / 2;
     mdl_stride_len = mdl_stride_len * 2;
-    mdl_peak_force = mdl_peak_force * 2;
     mdl_impulse = mdl_impulse * 2;
 end
 
 % load experimental data into variable 'subjectData'
 subject = "S05";
-BW = 59.12;
+BW = 91.35;
 trial_speed = target_speed * (l_uN / t_sim);
 load("exp_data/" +subject + "/" + subject + "_results_summary_" + trial_speed + "ms.mat");
 if MODE == 'r'
-    trial_data = subjectData.run_2ms;
+    if trial_speed == 1
+        trial_data = subjectData.run_1ms_unc_1min;
+    else
+        trial_data = subjectData.run_2ms;
+    end
 elseif MODE == 'h'
-    trial_data = subjectData.hop_2ms;
+    if trial_speed == 1
+        trial_data = subjectData.hop_1ms_unc_30sec;
+    else
+        trial_data = subjectData.hop_2ms;
+    end
 end
 
 exp_stride_freq = trial_data.General.StrideFrequency;
@@ -109,56 +116,75 @@ exp_dutyfac = trial_data.General.DutyFactor;
 exp_stride_len = trial_data.General.StrideLength;
 exp_peak_force = trial_data.Force.AvgPeakForceFz / (BW * 9.81);
 exp_impulse = trial_data.Force.AvgImpulseFz / (BW * 9.81);
-% exp_fAng = trial_data.CollisionAngles.ForceAngle;
-% exp_vAng = trial_data.CollisionAngles.VelocityAngle;
-% exp_cAng = trial_data.CollisionAngles.CollisionAngle;
-% exp_COT = trial_data.CollisionAngles.CoTmech;
+if isfield(trial_data, 'CollisionAngles')
+    exp_fAng = trial_data.CollisionAngles.ForceAngle;
+    exp_vAng = trial_data.CollisionAngles.VelocityAngle;
+    exp_cAng = trial_data.CollisionAngles.CollisionAngle;
+    exp_COT = trial_data.CollisionAngles.CoTmech;
+else
+    disp("Could not retrieve collision angle analysis from subject data");
+    exp_fAng = 0;
+    exp_vAng = 0;
+    exp_cAng = 0;
+    exp_COT = 0;
+end
 
+if MODE == 'h', exp_peak_force = exp_peak_force * 2; end
 % coalesce data
 
 param_labels = [
-    % "COT";
     "Stride Frequency";
     "Stride Length";
     "Duty Factor";
     "Peak Force";
     "Impulse";
-    % "Force Angle";
-    % "Velocity Angle";
-    % "Collision Angle";
+    "COT";
+    "Force Angle";
+    "Velocity Angle";
+    "Collision Angle";
 ];
 
 mdl_params = [
-    % mdl_COT;
     mdl_stride_freq;
-    % mdl_stride_duration;
     mdl_stride_len;
     mdl_dutyfac;
     mdl_peak_force;
     mdl_impulse;
-    % mdl_fAng;
-    % mdl_vAng;
-    % mdl_cAng;
+    mdl_COT;
+    mdl_fAng;
+    mdl_vAng;
+    mdl_cAng;
 ];
 
 exp_params = [
-    % exp_COT;
     exp_stride_freq;
-    % exp_stride_duration;
     exp_stride_len;
     exp_dutyfac;
     exp_peak_force;
     exp_impulse;
-    % exp_fAng;
-    % exp_vAng;
-    % exp_cAng;
+    exp_COT;
+    exp_fAng;
+    exp_vAng;
+    exp_cAng;
 ];
 
 figure;
-bar([mdl_params exp_params]);
-xticklabels(param_labels);
+% stride frequency length and df
+bar([mdl_params(1:3) exp_params(1:3)]);
+xticklabels(param_labels(1:3));
 legend('model', 'experiment');
 
+figure;
+% peak force and impulse
+bar([mdl_params(4:5) exp_params(4:5)]);
+xticklabels(param_labels(4:5));
+legend('model', 'experiment');
+
+figure;
+% Collision angles
+bar([mdl_params(6:9) exp_params(6:9)]);
+xticklabels(param_labels(6:9));
+legend('model', 'experiment');
 
 % preserves variables if needed
 if preserveVars

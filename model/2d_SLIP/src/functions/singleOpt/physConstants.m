@@ -22,7 +22,7 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     % I_scale = m_uN * (l_uN^2);            % Inertia scale (kg*m^2)
 
     %% UNNORMALIZED TARGET INPUTS
-    target_speed_uN = 2;                % m/s
+    target_speed_uN = 1;                % m/s
     target_freq_uN  = 0;                % Hz
     if mode == 'r', target_freq_uN = target_freq_uN * 2; end
     
@@ -36,6 +36,10 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     target_freq  = target_freq_uN * t_sim;    
     % I = 0.0463;             % Dimensionless inertia I*
     % I = 0.019;              % recomputed leg inertia cost (considering leg bend)
+
+    % k = 40;
+    % c = 0.01;
+    % I = 0.01;
 
     if mode == 'r'
         % hop run constrained two parameter fits
@@ -74,6 +78,11 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
         % k = 12.5; c = 0.05; I = 0.009;     % S06 - seems to work with cost sweeps... but gait predictions are slightly off
         % k = 20; c = 0.05; I = 0.012;     % S06 - experimenting with k
         % k = 15; c = 0.025; I = 0.01;   % S06 newest cost function
+
+        % testing when hopping emerges as optimal
+        % k = k;
+        % c = c;
+        % I = I;
     elseif mode == 'h'
         % return to doubling parameters
         % S05 2ms
@@ -103,5 +112,10 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
         % k = 20; c = 0.05; I = 0.012;
         % k = 20; c = 0.225; I = 0.022;   % S05
         % k = 20; c = 0.025; I = 0.03;     % S06
+
+        % testing when hopping emerges as optimal
+        % k = 2 * k;
+        % c = 2 * c;
+        % I = 2 * I;
     end
 end
