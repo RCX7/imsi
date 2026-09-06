@@ -15,8 +15,8 @@ addpath(DATAPATH);
 
 %% settings
 gait='r';
-% trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
-trials = {'hop_2ms'; 'run_2ms'};
+trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
+% trials = {'hop_2ms'; 'run_2ms'};
 if gait == 'r', curr_trial = trials{2}; else, curr_trial = trials{1}; end
 g = 9.81;       % gravity
 fs = 2000;      % sampling frequency
