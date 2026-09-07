@@ -24,8 +24,8 @@ m = 91.35; g = 9.81;
 gait = 'h';
 unc_freq = true;
 % trials = {'hop_1ms_4min'; 'run_1ms_4min'};
-trials = {'hop_1ms_unc_1min'; 'run_1ms_unc_1min'};
-% trials = {'hop_2ms'; 'run_2ms'};
+% trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
+trials = {'hop_2ms'; 'run_2ms'};
 if gait == 'r', curr_trial = trials{2}; else, curr_trial = trials{1}; end
 mse_npoints = 150;
 
@@ -44,11 +44,11 @@ switch gait
         ks = 10:2.5:30;
         Is = 0.005:0.005:0.06;
     case 'h'
-        ks = 25:2.5:50;
-        Is = 0.01:0.01:0.09;
+        ks = 25:1.25:50;
+        Is = 0.01:0.005:0.09;
 end
 
-cs = 0.025:0.05:0.5;
+cs = 0.025:0.025:0.5;
 
 [k_mesh, c_mesh, I_mesh] = meshgrid(ks, cs, Is);
 k_vec = k_mesh(:);
@@ -124,6 +124,31 @@ for i=1:num_subplots
     zlabel('Mean Squared Error (MSE)');
 end
 
+%% save MSE landscape as gif
+gif_filename = "mse_landscape_slices.gif";
+fig = figure('Visible','off');
+for i=1:num_subplots
+    curr_slice = mse_landscape(:,:,i);
+    curr_I = Is(i);
+    clf(fig);
+    surf(ks, cs, curr_slice);
+    view(0, 90);
+    shading flat;
+    title(sprintf('MSE Landscape Slice for I = %.5f', curr_I));
+    xlabel('Spring Constant (k)');
+    ylabel('Damping Constant (c)');
+    zlabel('Mean Squared Error (MSE)');
+    drawnow;
+    frame = getframe(fig);
+    im = frame2im(frame);
+    [A,map] = rgb2ind(im,256);
+    if i == 1
+        imwrite(A,map,gif_filename,'gif','LoopCount',Inf,'DelayTime',0.2);
+    else
+        imwrite(A,map,gif_filename,'gif','WriteMode','append','DelayTime',0.2);
+    end
+end
+close(fig);
 
 
 %% extract and plot best fit
