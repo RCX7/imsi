@@ -134,6 +134,9 @@ for i=1:num_subplots
     surf(ks, cs, curr_slice);
     view(0, 90);
     shading flat;
+    colormap jet;
+    colorbar;
+    caxis([0, 5]);
     title(sprintf('MSE Landscape Slice for I = %.5f', curr_I));
     xlabel('Spring Constant (k)');
     ylabel('Damping Constant (c)');
