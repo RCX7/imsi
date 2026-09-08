@@ -21,16 +21,15 @@ addpath(warmStartTemp_path);
 [num_mdl_pts, ~] = simConstants();
 % like physConstants but shouldn't be tied to a particular human
 g_uN = 9.81;
-l_uN = 0.5;   % length of leg in meters
+l_uN = 1.15;   % length of leg in meters
 t_sim = sqrt(l_uN / g_uN);
 v_scale = (l_uN / t_sim);
 
-target_speed_uN = 1;
-target_speed_base = target_speed_uN / v_scale; 
+target_speed_uN = 2;
 
-ks = 20:2.5:60;
-cs = 0.025:0.025:0.04;
-speeds = linspace(target_speed_base, 8*target_speed_base, 8);  % 1-8m/s
+ks = 20:2.5:40;
+cs = 0.0025:0.0025:0.03;
+speeds = 1:8;  % 1-8m/s
 I = 0.01;
 
 [k_mesh, c_mesh, speed_mesh] = meshgrid(ks, cs, speeds);
@@ -45,10 +44,10 @@ COT_diff_landscape = zeros(n_sims, 1);
 
 % parallelize optimizations
 addpath(multiOpt_path);
-cluster = parcluster('local'); 
-cluster.NumWorkers = 24; 
-saveProfile(cluster); 
-parpool(24); 
+% cluster = parcluster('local'); 
+% cluster.NumWorkers = 24; 
+% saveProfile(cluster); 
+% parpool(24); 
 parfor i=1:n_sims
     k_run = k_vec(i);
     k_hop = 2 * k_run;
@@ -57,7 +56,8 @@ parfor i=1:n_sims
 
     I_run = I;
     I_hop = 2 * I;
-    target_speed = speed_vec(i);
+    target_speed_uN = speed_vec(i);
+    target_speed = target_speed_uN * (l_uN / t_sim);
     
     
     [run_COT, ~, ~, ~, ~, ~] = ...
@@ -73,7 +73,7 @@ end
 %% reshape landscape and plot slices
 COT_diff_landscape = reshape(COT_diff_landscape, size(k_mesh));
 COT_diff_landscape(COT_diff_landscape == 0) = max(COT_diff_landscape, [], "all");  % not sure the replacement here..
-clip(COT_diff_landscape, -5, 5);  % may not be necessary
+COT_diff_landscape = clip(COT_diff_landscape, -1, 1);  % may not be necessary
 
 num_subplots = numel(speeds);
 % num_cols = 4;
@@ -86,6 +86,7 @@ for i=1:num_subplots
     figure;
     % subplot(num_rows, num_cols, i);
     surf(ks, cs, curr_slice);
+    colormap jet;
     title(sprintf('COT Diff Landscape Slice for speed = %.5f', curr_speed));
     xlabel('Spring Constant (k)');
     ylabel('Damping Constant (c)');

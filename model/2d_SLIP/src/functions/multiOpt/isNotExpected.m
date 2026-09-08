@@ -26,8 +26,8 @@ function flag = isNotExpected(cot, ttotal)
     % end
 
     % SIMPLE CALCULATION - WORKS ALMOST AS WELL?
-    cot_cond = (cot > 17.5 | cot <= 0.05);
-    time_cond = (ttotal > 1.5 | ttotal < 0.1);
+    cot_cond = (cot > 17.5 | cot <= 0.005);
+    time_cond = (ttotal > 1.5 | ttotal < 0.01);
     flag = cot_cond | time_cond;
     
     if (cot_cond && cot ~= 0)

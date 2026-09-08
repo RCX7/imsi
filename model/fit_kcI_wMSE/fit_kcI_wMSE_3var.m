@@ -21,7 +21,7 @@ addpath(warmStartTemp_path);
 %% settings and testing conditions
 subject = "S05";
 m = 91.35; g = 9.81;
-gait = 'h';
+gait = 'r';
 unc_freq = true;
 % trials = {'hop_1ms_4min'; 'run_1ms_4min'};
 % trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
@@ -125,7 +125,7 @@ for i=1:num_subplots
 end
 
 %% save MSE landscape as gif
-gif_filename = "mse_landscape_slices.gif";
+gif_filename = "run_mse_landscape_slices.gif";
 fig = figure('Visible','off');
 for i=1:num_subplots
     curr_slice = mse_landscape(:,:,i);
