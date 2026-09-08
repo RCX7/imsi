@@ -87,7 +87,7 @@ for gait_idx=1:2
         c = c_vec(i);
         I = I_vec(i);
         
-        [~, ~, ~, ~, ~, w_star] = ...
+        [~, ~, ~, ~, ~, w_star, ~] = ...
                     robustMinCOT(gait, target_speed, 0, k, c, I, 0);
     
         if w_star

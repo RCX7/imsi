@@ -6,5 +6,5 @@
 
 function [cost] = costFun(w, mode)
     [m, g, ~, ~, ~, ~, ~, ~, I, ~, ~] = physConstants(mode);
-    [cost, ~, ~, ~, ~] = costFunBase(w, m, g, I, mode);
+    [cost, ~, ~, ~, ~, ~] = costFunBase(w, m, g, I, mode);
 end

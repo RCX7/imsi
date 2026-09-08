@@ -78,7 +78,7 @@ parfor i=1:n_sims
     c = c_vec(i);
     I = I_vec(i);
     
-    [~, ~, ~, ~, ~, w_star] = ...
+    [~, ~, ~, ~, ~, w_star, ~] = ...
                 robustMinCOT(gait, target_speed, target_freq, k, c, I, 0);
 
     if w_star
@@ -164,7 +164,7 @@ best_I = Is(best_I_idx);
 fprintf("Best fitting values of k, c, I: %.2f, %.2f \n", best_k, best_c, best_I);
 
 
-[~, ~, ~, ~, ~, w_star] = ...
+[~, ~, ~, ~, ~, w_star, ~] = ...
                 robustMinCOT(gait, target_speed, target_freq, best_k, best_c, best_I, 0);
 
 [control, states, addDecs] = decToMats(w_star);

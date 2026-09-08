@@ -78,7 +78,7 @@ parfor i=1:n_sims
     k = firstvar_vec(i);
     c = secondvar_vec(i);
     
-    [~, ~, ~, ~, ~, w_star] = ...
+    [~, ~, ~, ~, ~, w_star, ~] = ...
                 robustMinCOT(gait, target_speed, target_freq, k, c, I, 0);
 
     [control, states, addDecs] = decToMats(run_w_star);

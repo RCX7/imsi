@@ -47,7 +47,7 @@ parfor s_idx = 1:num_speeds
     next_guess_hop = 0;
     
     % --- Running COT ---
-    [runCOT, run_stance_cost, run_flight_cost, run_tstance, run_tflight, next_guess_run] = ...
+    [runCOT, run_stance_cost, run_flight_cost, run_tstance, run_tflight, next_guess_run, cost_scale_factor] = ...
         robustMinCOT('r', speed, target_freq_r, k_run, c_run, I_run, next_guess_run);
     runCOTs(s_idx) = runCOT;
     run_stance_costs(s_idx) = run_stance_cost;
@@ -57,7 +57,7 @@ parfor s_idx = 1:num_speeds
     
     % --- Hopping COT ---
     % Pass the preallocated slice up to the current index
-    [hopCOT, hop_stance_cost, hop_flight_cost, hop_tstance, hop_tflight, next_guess_hop] = ...
+    [hopCOT, hop_stance_cost, hop_flight_cost, hop_tstance, hop_tflight, next_guess_hop, cost_scale_factor] = ...
         robustMinCOT('h', speed, target_freq_h, k_hop, c_hop, I_hop, next_guess_hop);  % minCOT doubles I already
     hopCOTs(s_idx) = hopCOT;
     hop_stance_costs(s_idx) = hop_stance_cost;
@@ -72,11 +72,11 @@ plt_speeds = speeds * (l_uN / t_sim);
 figure;
 subplot(1, 2, 1);
 hold on;
-plot(plt_speeds, runCOTs / 100, "r-", "LineWidth", 3);
+plot(plt_speeds, runCOTs / cost_scale_factor, "r-", "LineWidth", 3);
 plot(plt_speeds, run_stance_costs, "r--");
 plot(plt_speeds, run_flight_costs, "r:");
 
-plot(plt_speeds, hopCOTs / 100, "b-", "LineWidth", 3);
+plot(plt_speeds, hopCOTs / cost_scale_factor, "b-", "LineWidth", 3);
 plot(plt_speeds, hop_stance_costs, "b--");
 plot(plt_speeds, hop_flight_costs, "b:");
 

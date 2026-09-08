@@ -4,10 +4,10 @@
 % Gives a detailed report on the statistics of the cost function, including
 % stance and flight cost, and stance and flight times
 
-function [cost, stanceCost, swingCost, tstance, tflight]...
+function [cost, stanceCost, swingCost, tstance, tflight, cost_scale_factor]...
     = detailedCost(w, mode, I)
 
     [m, g, ~] = physConstants();
-    [cost, stanceCost, swingCost, tstance, tflight] = costFunBase(w, m, g, I, mode);
+    [cost, stanceCost, swingCost, tstance, tflight, cost_scale_factor] = costFunBase(w, m, g, I, mode);
 
 end

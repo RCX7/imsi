@@ -14,7 +14,7 @@
 % OUTPUTS:
 %   - cost of transport (with leg inertia)
 
-function [COT, stanceCost, flightCost, tstance, tflight, w_star] =...
+function [COT, stanceCost, flightCost, tstance, tflight, w_star, cost_scale_factor] =...
     minCOT(mode, target_speed, target_freq, k, c, I, init_guess)
 
     arguments
@@ -60,8 +60,8 @@ function [COT, stanceCost, flightCost, tstance, tflight, w_star] =...
     % decision vector (inital guess)
     if init_guess == 0
         disp("using warm start template");
-        if mode == 'r', load('warmStartTemplates/runN35_kcI225025005.mat', 'w_star');
-        else, load('warmStartTemplates/hopN35_kcI400205.mat', 'w_star'); end
+        if mode == 'r', load('warmStartTemplates/runN35_kcI225012502_4ms.mat', 'w_star');
+        else, load('warmStartTemplates/hopN35_kcI4502504_4ms.mat', 'w_star'); end
         w0 = w_star;
     else
         w0 = init_guess;
@@ -74,6 +74,6 @@ function [COT, stanceCost, flightCost, tstance, tflight, w_star] =...
     w_star = fmincon(cost, w0, A, b, Aeq, beq, lb, ub,...
         constraints, options);
     
-    [COT, stanceCost, flightCost, tstance, tflight]...
+    [COT, stanceCost, flightCost, tstance, tflight, cost_scale_factor]...
     = detailedCost(w_star, mode, I);
 end

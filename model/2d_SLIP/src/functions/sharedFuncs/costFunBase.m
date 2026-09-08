@@ -4,7 +4,7 @@
 % A base cost function to modularize logic for computing cost. Like computeForcesBase and
 % computeSlopesBase, single and multi opt versions call this function.
 
-function [cost, stanceCost, swingCost, tstance, tflight] = costFunBase(w, m, g, I, mode)
+function [cost, stanceCost, swingCost, tstance, tflight, cost_scale_factor] = costFunBase(w, m, g, I, mode)
     [~, states, addDecs] = decToMats(w);
     [N, ~] = simConstants();
     [xs, xdots, zs, zdots, ~] = extractStates(states);
@@ -17,7 +17,9 @@ function [cost, stanceCost, swingCost, tstance, tflight] = costFunBase(w, m, g, 
     % input 'r' for running, 'h' for hopping.
     swingCost = computeSwingWorkBase(m, g, dist, addDecs(1), addDecs(2), mode, I, dtravel);
     stanceCost = trapz((addDecs(1) / (N - 1)), addDecs(3:2+N)); % fixed this
-    cost = (stanceCost + swingCost) * 100;
+
+    cost_scale_factor = 500;
+    cost = (stanceCost + swingCost) * cost_scale_factor;
 
     tstance = addDecs(1);
     tflight = addDecs(2);
