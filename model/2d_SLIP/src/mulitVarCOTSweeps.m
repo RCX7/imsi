@@ -70,7 +70,8 @@ end
 %% reshape landscape and plot slices
 COT_diff_landscape = reshape(COT_diff_landscape, size(k_mesh));
 COT_diff_landscape(COT_diff_landscape == 0) = max(COT_diff_landscape, [], "all");  % not sure the replacement here..
-COT_diff_landscape = clip(COT_diff_landscape, -3, 3);  % may not be necessary
+cbar_bound = max(abs(COT_diff_landscape(:)));
+COT_diff_landscape = clip(COT_diff_landscape, -cbar_bound, cbar_bound);  % may not be necessary
 
 num_subplots = numel(Is);
 % num_cols = 4;
@@ -97,7 +98,7 @@ for i=1:num_subplots
     % subplot(num_rows, num_cols, i);
     surf(ks, cs, curr_slice);
     colormap(rgb);
-    caxis([-3 3])
+    clim([-cbar_bound cbar_bound]);
     title(sprintf('COT Diff Landscape Slice for I = %.5f', curr_I));
     xlabel('Spring Constant (k)');
     ylabel('Damping Constant (c)');
@@ -105,7 +106,7 @@ for i=1:num_subplots
 end
 
 %% save MSE landscape as gif
-gif_filename = "animations/COT_landscape_slices_4ms_low_c.gif";
+gif_filename = "animations/COT_landscape_slices_4ms_finer_c.gif";
 fig = figure('Visible','off');
 for i=1:num_subplots
     curr_slice = COT_diff_landscape(:,:,i);
@@ -116,7 +117,7 @@ for i=1:num_subplots
     shading flat;
     colormap(rgb);
     colorbar;
-    caxis([-3, 3]);
+    clim([-cbar_bound cbar_bound]);
     title(sprintf('COT diff landscape Slice for I = %.5f', curr_I));
     xlabel('Spring Constant (k)');
     ylabel('Damping Constant (c)');

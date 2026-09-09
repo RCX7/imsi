@@ -172,19 +172,28 @@ figure;
 % stride frequency length and df
 bar([mdl_params(1:3) exp_params(1:3)]);
 xticklabels(param_labels(1:3));
+title("Model vs Human Gait");
 legend('model', 'experiment');
+ax = gca;
+ax.FontSize = 35; 
 
 figure;
 % peak force and impulse
 bar([mdl_params(4:5) exp_params(4:5)]);
 xticklabels(param_labels(4:5));
+title("Model vs Human Gait");
 legend('model', 'experiment');
+ax = gca;
+ax.FontSize = 35; 
 
 figure;
 % Collision angles
 bar([mdl_params(6:9) exp_params(6:9)]);
 xticklabels(param_labels(6:9));
+title("Model vs Human Gait");
 legend('model', 'experiment');
+ax = gca;
+ax.FontSize = 35; 
 
 % preserves variables if needed
 if preserveVars
