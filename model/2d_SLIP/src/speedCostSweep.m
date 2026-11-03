@@ -1,4 +1,4 @@
-% speedCostSweep.m
+    % speedCostSweep.m
 % Roger Chen
 % 2026-08-16
 % Sweeps COTs across speeds. Based on analysis 1.2 of paramAnalysis (one of
@@ -14,7 +14,7 @@ addpath('warmStartTemplates');
 %% set up variables
 addpath('functions/singleOpt');
 [~, ~, k_run, c_run, ~, ~, ~, target_freq_r, I_run, ~, ~] = physConstants('r');
-[~, ~, k_hop, c_hop, ~, ~, target_speed, target_freq_h, I_hop, t_sim, l_uN] = physConstants('h');
+[~, ~, k_hop, c_hop, ~, ~, target_speed, target_freq_h, I_hop, t_sim, l_uN, c_i] = physConstants('h');
 rmpath('functions/singleOpt');
 
 target_speed = 3 / (l_uN / t_sim);  % set to a constant here.

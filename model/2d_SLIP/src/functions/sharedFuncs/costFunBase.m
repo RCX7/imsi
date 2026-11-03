@@ -18,7 +18,7 @@ function [cost, stanceCost, swingCost, tstance, tflight, cost_scale_factor] = co
     swingCost = computeSwingWorkBase(m, g, dist, addDecs(1), addDecs(2), mode, I, dtravel);
     stanceCost = trapz((addDecs(1) / (N - 1)), addDecs(3:2+N)); % fixed this
 
-    cost_scale_factor = 500;
+    cost_scale_factor = 100;
     cost = (stanceCost + swingCost) * cost_scale_factor;
 
     tstance = addDecs(1);

@@ -43,7 +43,7 @@ function [COT, stride_freq, stride_len, stride_duration, dutyfac, peak_force, im
         fprintf("Frequency: %.2f steps/s\n", stride_freq);
         fprintf("Speed: %.2f m/s (%.2f mph)\n", un_speed, un_speed * 2.23694)
         
-        fprintf("COST: %.2f\n", COT);
+        fprintf("COST: %.5f\n", COT);
         disp("Collision-based analysis angles (rad): ")
         fprintf("force: %f\n", fAng);
         fprintf("vel: %f\n", vAng);

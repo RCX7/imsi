@@ -6,6 +6,6 @@
 function [const, const_eq] = trajConstraints(w, mode)
 
     % retrieve constants
-    [m, g, k, c, la0, ~, target_speed, target_freq, ~, ~, ~] = physConstants(mode);
-    [const, const_eq] = trajConstraintsBase(w, m, g, la0, target_speed, target_freq, k, c);
+    [m, g, k, c, la0, ~, target_speed, target_freq, ~, ~, ~, c_i] = physConstants(mode);
+    [const, const_eq] = trajConstraintsBase(w, m, g, la0, target_speed, target_freq, k, c, c_i);
 end

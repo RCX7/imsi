@@ -7,8 +7,8 @@
 clc; clearvars; %close all;
 
 % mdl_src_path = 'C:\Users\azizi\Downloads\rogerc8_imsi_work\imsi\model\2d_SLIP\src';
-% mdl_src_path = 'C:\Users\roger\imsi\model\2d_SLIP\src';
-mdl_src_path = 'C:\Users\Public\Documents\Roger\imsi\model\2d_SLIP\src';
+mdl_src_path = 'C:\Users\roger\imsi\model\2d_SLIP\src';
+% mdl_src_path = 'C:\Users\Public\Documents\Roger\imsi\model\2d_SLIP\src';
 mdl_func_path = fullfile(mdl_src_path, "functions");
 shared_func_path = fullfile(mdl_func_path, "sharedFuncs");
 singleOpt_path = fullfile(mdl_func_path, "singleOpt");
@@ -21,7 +21,7 @@ addpath(warmStartTemp_path);
 %% settings and testing conditions
 subject = "S05";
 m = 91.35; g = 9.81;
-gait = 'r';
+gait = 'h';
 unc_freq = true;
 % trials = {'hop_1ms_4min'; 'run_1ms_4min'};
 % trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
@@ -69,10 +69,10 @@ mse_landscape = zeros(n_sims, 1);
 
 % parallelize optimizations
 addpath(multiOpt_path);
-cluster = parcluster('local'); 
-cluster.NumWorkers = 24; 
-saveProfile(cluster); 
-parpool(24); 
+% cluster = parcluster('local'); 
+% cluster.NumWorkers = 24; 
+% saveProfile(cluster); 
+% parpool(24); 
 parfor i=1:n_sims
     k = k_vec(i);
     c = c_vec(i);
@@ -108,9 +108,18 @@ mse_landscape(mse_landscape == 0) = max(mse_landscape, [], "all");
 mse_landscape(mse_landscape > 5) = 5;
 
 num_subplots = numel(Is);
-% num_cols = 4;
-% num_rows = ceil(num_subplots / num_cols);
 
+%% define colormap - single intensity for clarity
+lightBlue = [0.18, 0.35, 1.0]; 
+% Number of levels in the colormap
+n = 255;
+
+% Interpolate from white [1, 1, 1] to light blue
+cmap = [linspace(lightBlue(1), 1, n)', ...
+        linspace(lightBlue(2), 1, n)', ...
+        linspace(lightBlue(3), 1, n)'];
+
+%% plot
 for i=1:num_subplots
     curr_slice = mse_landscape(:,:,i);
     curr_I = Is(i);
@@ -118,14 +127,20 @@ for i=1:num_subplots
     figure;
     % subplot(num_rows, num_cols, i);
     surf(ks, cs, curr_slice);
-    title(sprintf('MSE Landscape Slice for I = %.5f', curr_I));
+    colormap(cmap);
+    clim([0, 1]);
+    colorbar;
+    view(0, 90);
+    title(sprintf('MSE Landscape Slice for I = %.3f', curr_I));
     xlabel('Spring Constant (k)');
     ylabel('Damping Constant (c)');
     zlabel('Mean Squared Error (MSE)');
+    ax = gca;
+    ax.FontSize = 15;
 end
 
 %% save MSE landscape as gif
-gif_filename = "run_mse_landscape_slices.gif";
+gif_filename = "run_mse_landscape_slices_v2.gif";
 fig = figure('Visible','off');
 for i=1:num_subplots
     curr_slice = mse_landscape(:,:,i);
@@ -134,13 +149,15 @@ for i=1:num_subplots
     surf(ks, cs, curr_slice);
     view(0, 90);
     shading flat;
-    colormap jet;
+    colormap(cmap);
     colorbar;
-    caxis([0, 5]);
-    title(sprintf('MSE Landscape Slice for I = %.5f', curr_I));
+    clim([0, 0.5]);
+    title(sprintf('Run MSE Landscape Slice for I = %.3f', curr_I));
     xlabel('Spring Constant (k)');
     ylabel('Damping Constant (c)');
     zlabel('Mean Squared Error (MSE)');
+    ax = gca;
+    ax.FontSize = 15;
     drawnow;
     frame = getframe(fig);
     im = frame2im(frame);

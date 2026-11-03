@@ -4,7 +4,7 @@
 % Modularizing commonly used physical constants. Used in determining the
 % kinematics of the simulation
 
-function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]...
+function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN, c_i]...
             = physConstants(mode)
     assert(mode == 'r' | mode == 'h')
     
@@ -22,7 +22,7 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     % I_scale = m_uN * (l_uN^2);            % Inertia scale (kg*m^2)
 
     %% UNNORMALIZED TARGET INPUTS
-    target_speed_uN = 4;                % m/s
+    target_speed_uN = 3;                % m/s
     target_freq_uN  = 0;                % Hz
     if mode == 'r', target_freq_uN = target_freq_uN * 2; end
     
@@ -40,6 +40,8 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
     % k = 40;
     % c = 0.01;
     % I = 0.01;
+    
+    c_i = 0.5;  % c_i - impact compliance
 
     if mode == 'r'
         % hop run constrained two parameter fits
@@ -57,6 +59,10 @@ function [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN]..
         k = 22.5;
         c = 0.125;
         I = 0.02;
+        
+        % k = 22.5;
+        % c = 0.0875;
+        % I = 0.01;
 
         % S05 1ms - not precise
         % k = 15;

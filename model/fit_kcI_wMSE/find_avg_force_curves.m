@@ -14,9 +14,9 @@ disp("Data source: " + DATAPATH);
 addpath(DATAPATH);
 
 %% settings
-gait='r';
-trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
-% trials = {'hop_2ms'; 'run_2ms'};
+gait='h';
+% trials = {'hop_1ms_unc_30sec'; 'run_1ms_unc_1min'};
+trials = {'hop_2ms'; 'run_2ms'};
 if gait == 'r', curr_trial = trials{2}; else, curr_trial = trials{1}; end
 g = 9.81;       % gravity
 fs = 2000;      % sampling frequency
@@ -105,6 +105,19 @@ hold on;
 plot(ftotal_strides');
 plot(average_stride_ftotal, "k-", LineWidth=5);
 hold off;
+
+figure
+title("Net forces")
+hold on;
+t_plot = linspace(0, tstance_avg, numel(average_stride_ftotal));
+plot(t_plot, ftotal_strides');
+plot(t_plot, average_stride_ftotal, "k-", LineWidth=3.5);
+xlim([0, tstance_avg])
+xlabel("Time (sec)")
+ylabel("Force (N)");
+hold off;
+ax = gca;
+ax.FontSize = 25; 
 
 
 curve_timing = "full_stride";

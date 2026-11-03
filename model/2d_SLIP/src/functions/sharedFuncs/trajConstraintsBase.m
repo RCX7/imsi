@@ -4,7 +4,7 @@
 % A base function to modularize the logic for the trajectory constraints.
 % Derived versions exist for singleOpt and multiOpt
 
-function [const, const_eq] = trajConstraintsBase(w, m, g, la0, target_speed, target_freq, k, c)
+function [const, const_eq] = trajConstraintsBase(w, m, g, la0, target_speed, target_freq, k, c, c_i)
 
     % retrieve constants
     [N, ~] = simConstants();
@@ -27,9 +27,21 @@ function [const, const_eq] = trajConstraintsBase(w, m, g, la0, target_speed, tar
     
     [xf, xdotf, zf, zdotf] = flightKinematics(xs(end), xdots(end), zs(end), zdots(end), addDecs(2));
     match_target_speed = ((xf - xs(1)) / (total_time)) - target_speed;
-    end_constraints = [(xdots(1) - xdotf);
+
+    % new addition (11/1/2026)
+    vplus = [xdots(1); zdots(1)];  % combined velocity vector
+    vminus = [xdotf(end); zdotf(end)];
+    r = [xs(1); zs(1)];  % should be the same as xf and zf
+    impact_compliance_constraints = [
+        vplus - (eye(numel(vminus)) - (1 - c_i) * (r * r')) * vminus;
+    ];
+
+
+    end_constraints = [
+                       % (xdots(1) - xdotf);
+                       % (zdots(1) - zdotf);
                        (zs(1) - zf);
-                       (zdots(1) - zdotf);
+                       impact_compliance_constraints;
                        match_target_speed
                        ];
     stance_to_flight_constraints = [forces(end)];
@@ -49,6 +61,7 @@ function [const, const_eq] = trajConstraintsBase(w, m, g, la0, target_speed, tar
         frequency_constraints = [total_time - (1 / target_freq);]; % normalized
     end
 
+
     const = [
         unsignedPowerConst;
         % -forces;
@@ -58,6 +71,7 @@ function [const, const_eq] = trajConstraintsBase(w, m, g, la0, target_speed, tar
            defect_constraints;
            border_constraints;
            frequency_constraints;
+           impact_compliance_constraints;
            %control'
            ];
 

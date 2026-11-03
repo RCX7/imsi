@@ -22,7 +22,7 @@ preserveVars = true;
 A = []; b = []; Aeq = []; beq = [];
 
 % get constants
-MODE = 'r'; % r for running, h for hopping
+MODE = 'h'; % r for running, h for hopping
 
 [m, g, k, c, la0, laRange, target_speed, target_freq, I, t_sim, l_uN] =...
     physConstants(MODE);
@@ -46,8 +46,8 @@ ub = matToDec(ub_u, ub_states, ub_addDecs);
 if warmStart
     if ~exist('w_star', 'var')
         disp("using warm start template");
-        if MODE == 'r', load('warmStartTemplates/runN35_kc275015_fast.mat');
-        else, load('warmStartTemplates/hopN35_kc2001.mat'); end
+        if MODE == 'r', load('warmStartTemplates/runN35_kcI225025005.mat');
+        else, load('warmStartTemplates/hopN35_kcI400205.mat'); end
     end
     
     if numel(w_star) ~= ((n_states + 2) * N + 2)  % scale to different number of points
@@ -144,6 +144,18 @@ param_labels = [
     "Collision Angle";
 ];
 
+units = [
+    "Frequency (Hz)";
+    "Length (m)";
+    "Duty Factor";
+    "Force (BW)";
+    "Impulse (BW * s)";
+    "COT";
+    "Angle (rad)";
+    "Angle (rad)";
+    "Angle (rad)";
+];
+
 mdl_params = [
     mdl_stride_freq;
     mdl_stride_len;
@@ -168,23 +180,49 @@ exp_params = [
     exp_cAng;
 ];
 
-figure;
-% stride frequency length and df
-bar([mdl_params(1:3) exp_params(1:3)]);
-xticklabels(param_labels(1:3));
-legend('model', 'experiment');
+colors = [0.98, 0.2, 0.98      % magenta for model
+          0.7733, 0.5956, 0.4711;];  % hazel for human
 
-figure;
-% peak force and impulse
-bar([mdl_params(4:5) exp_params(4:5)]);
-xticklabels(param_labels(4:5));
-legend('model', 'experiment');
+for fig_num=1:numel(param_labels)-4
+    figure;
+    b = bar(["Model" "Experiment"], [mdl_params(fig_num) exp_params(fig_num)], 'FaceColor', 'flat');
+    b.CData = colors;
+    b(1).Labels = b(1).YData;
+    b(1).FontSize = 20;
+    title(["Model vs. Human 1 m/s Run", "(" + param_labels(fig_num) + ")"]);
+    ylabel(units(fig_num));
+    xlabel("Subject");
+    ylim([0, 1.25 * max(b(1).YData)]);
+    ax = gca;
+    ax.FontSize = 20;
+end
 
-figure;
-% Collision angles
-bar([mdl_params(6:9) exp_params(6:9)]);
-xticklabels(param_labels(6:9));
-legend('model', 'experiment');
+% figure;
+% % stride frequency length and df
+% bar([mdl_params(1:3) exp_params(1:3)]);
+% xticklabels(param_labels(1:3));
+% title("Model vs Human Gait");
+% legend('model', 'experiment');
+% ax = gca;
+% ax.FontSize = 30;
+% 
+% figure;
+% % peak force and impulse
+% bar([mdl_params(4:5) exp_params(4:5)]);
+% xticklabels(param_labels(4:5));
+% title("Model vs Human Gait");
+% legend('model', 'experiment');
+% ax = gca;
+% ax.FontSize = 30; 
+% 
+% figure;
+% % Collision angles
+% bar([mdl_params(7:9) exp_params(7:9)]);
+% xticklabels(param_labels(7:9));
+% title("Model vs Human Gait");
+% legend('model', 'experiment');
+% ax = gca;
+% ax.FontSize = 30;
 
 % preserves variables if needed
 if preserveVars
